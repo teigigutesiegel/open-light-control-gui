@@ -1,4 +1,4 @@
-from model import *
+from fixture_model import *
 
 import json
 import os
