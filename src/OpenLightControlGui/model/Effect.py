@@ -1,0 +1,3 @@
+
+class Effect():
+    pass
