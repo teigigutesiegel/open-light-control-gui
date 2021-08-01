@@ -1,9 +1,10 @@
-from fixture_model import *
+from OpenLightControlGui.fixture_model import *
 
 import json
 import os
 
-ofl = "../open-fixture-library/fixtures/"
+basepath = os.path.dirname(__file__)
+ofl = os.path.join(basepath, "../../open-fixture-library/fixtures/")
 
 
 def check_prop(obj, checkagain=True):
