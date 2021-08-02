@@ -49,9 +49,9 @@ class AbstractDirectoryView(QMainWindow):
         self._mainGrid = FlowLayout(margin=0, spacing=0)
         self._mainTable = QTableWidget(self._placeholder, 4)
         self._mainTable.setHorizontalHeaderLabels(["Name", "Colour", "Comment", "Kind"])
+        self._mainTable.setStyleSheet("color: #fff")
 
         self._fill_grid()
-        self._fill_grid_rand()
         
         self._mainStack = QStackedLayout()
         self._gridWid = QWidget()
@@ -70,15 +70,18 @@ class AbstractDirectoryView(QMainWindow):
         QWidget {
             background: #282828;
         }
+        QPushButton {
+            color: #fff;
+        }
         QPushButton:pressed,
         QPushButton:hover,
         QPushButton:checked {
+            color: #000;
             background-color: rgb(0,0,255);
         }""")
 
         self._mainToolbar = QToolBar()
         self._guardbut = QPushButton("Guard")
-        self._guardbut.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         self._guardbut.clicked.connect(self._toggle_guard)
         self._tablebut = QPushButton()
         self._tablebut.setIconSize(QSize(30, 30))
@@ -91,7 +94,40 @@ class AbstractDirectoryView(QMainWindow):
         self._mainToolbar.addWidget(self._guardbut)
         self._mainToolbar.addWidget(self._tablebut)
         self._mainToolbar.addWidget(self._lightbut)
+        self._guardbut.setFixedHeight(36)
         self.addToolBar(self._mainToolbar)
+        
+        kindToolbar = QToolBar()
+        kindwid = QWidget()
+        kindlay = QGridLayout()
+        kindlay.setSpacing(0)
+        kindlay.setContentsMargins(0,0,0,0)
+        i = QLabel("I")
+        p = QLabel("P")
+        c = QLabel("C")
+        c.setStyleSheet("background-color: #00f;")
+        b = QLabel("B")
+        kindlay.addWidget(i, 0, 0)
+        kindlay.addWidget(p, 0, 1)
+        kindlay.addWidget(c, 0, 2)
+        kindlay.addWidget(b, 0, 3)
+        e = QLabel("E")
+        t = QLabel("T")
+        l = QLabel("L")
+        kindlay.addWidget(e, 1, 0)
+        kindlay.addWidget(t, 1, 1)
+        kindlay.addWidget(l, 1, 2)
+        kindwid.setLayout(kindlay)
+        kindToolbar.addWidget(kindwid)
+        font = i.font()
+        font.setPointSize(8)
+        for lab in [i, p, c, b, e, t, l]:
+            lab.setFont(font)
+            lab.setStyleSheet(lab.styleSheet() + "color: #fff")
+            # lab.setMargin(1)
+            lab.setAlignment(Qt.AlignCenter)
+            lab.setFixedSize(15, 15)
+        self.addToolBar(kindToolbar)
     
     def _fill_grid(self):
         for i in range(self._placeholder):
@@ -100,6 +136,7 @@ class AbstractDirectoryView(QMainWindow):
             self._mainTable.setRowHidden(i, True)
     
     def _fill_grid_rand(self, num = 20):
+        """for testing only"""
         for i in range(num):
             num_ = randint(1, self._placeholder)
             self.setItem(num_, self.ViewTile(
@@ -117,17 +154,25 @@ class AbstractDirectoryView(QMainWindow):
         # self._mainGrid.replaceWidget(self._mainGrid.itemAt(pos-1).widget(), self.ViewTile(pos+1, item.name, item.getColor()))
     
     def _add_table_item(self, item: "ViewTile") -> None:
-        self._mainTable.setItem(
-            item._num-1, 0, QTableWidgetItem(str(item._title)))
+        wid = QTableWidgetItem(str(item._title))
+        self._mainTable.setItem(item._num-1, 0, wid)
         if item.getColour():
             colwid = QTableWidgetItem()
             colwid.setBackground(item.getColour())
+            colwid.setFlags(Qt.ItemIsEnabled)
             self._mainTable.setItem(item._num-1, 1, colwid)
-        self._mainTable.setItem(
-            item._num-1, 3, QTableWidgetItem(item._getdirIndicator()))
+        wid = QTableWidgetItem(item._getdirIndicator())
+        wid.setFlags(Qt.ItemIsEnabled)
+        self._mainTable.setItem(item._num-1, 3, wid)
         self._mainTable.setRowHidden(item._num-1, False)
         self._resize_table()
 
+    def _remove_table_item(self, pos: int) -> None:
+        self._mainTable.removeCellWidget(pos-1, 0)
+        self._mainTable.removeCellWidget(pos-1, 1)
+        self._mainTable.removeCellWidget(pos-1, 2)
+        self._mainTable.removeCellWidget(pos-1, 3)
+        self._mainTable.setRowHidden(pos-1, True)
 
     def isInGuardMode(self) -> bool:
         return self._guard_mode
@@ -137,6 +182,7 @@ class AbstractDirectoryView(QMainWindow):
 
     def removeItem(self, pos: int) -> None:
         self._mainGrid.removeWidget(self._mainGrid.itemAt(pos-1).widget())
+        self._remove_table_item(pos)
         del self._items[pos]
 
     def setItems(self, dic: 'dict[int, object]') -> None:
@@ -177,6 +223,7 @@ class AbstractDirectoryView(QMainWindow):
     
     def _resize_table(self) -> None:
         self._mainTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self._mainTable.horizontalHeader().setSectionResizeMode(0, QHeaderView.Interactive)
     
     class ViewTile(QPushButton):
         _title: str = ""
