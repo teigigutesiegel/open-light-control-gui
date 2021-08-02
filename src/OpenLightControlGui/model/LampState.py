@@ -62,11 +62,11 @@ class PositionState(BaseState):
         return PositionState(self.vals)
 
 
-class ColourState(BaseState):
-    types = Literal["Hue", "Saturation", "Red", "Green", "Blue", "Slot", "Slot2", "ColourFx"]
+class ColorState(BaseState):
+    types = Literal["Hue", "Saturation", "Red", "Green", "Blue", "Slot", "Slot2", "ColorFx"]
 
-    def copy(self) -> 'ColourState':
-        return ColourState(self.vals)
+    def copy(self) -> 'ColorState':
+        return ColorState(self.vals)
 
 
 class BeamState(BaseState):
@@ -79,19 +79,19 @@ class BeamState(BaseState):
 class LampState():
     Intesity: Optional[IntesityState]
     Position: Optional[PositionState]
-    Colour: Optional[ColourState]
+    Color: Optional[ColorState]
     Beam: Optional[BeamState]
     Effect: Optional[Iterable[Effect]]
 
-    def __init__(self, Intesity: Optional[IntesityState] = None, Position: Optional[PositionState] = None, Colour: Optional[ColourState] = None, Beam: Optional[BeamState] = None, Effect_: Optional[Iterable[Effect]] = None) -> None:
+    def __init__(self, Intesity: Optional[IntesityState] = None, Position: Optional[PositionState] = None, Color: Optional[ColorState] = None, Beam: Optional[BeamState] = None, Effect_: Optional[Iterable[Effect]] = None) -> None:
         self.Intesity = Intesity
         self.Position = Position
-        self.Colour = Colour
+        self.Color = Color
         self.Beam = Beam
         self.Effect = Effect_
 
     def copy(self) -> 'LampState':
-        return LampState(self.Intesity, self.Position, self.Colour, self.Beam, self.Effect)
+        return LampState(self.Intesity, self.Position, self.Color, self.Beam, self.Effect)
 
     def __add__(self, o: 'Union[LampState, Iterable[LampState]]') -> 'LampState':
         s = self.copy()
@@ -104,7 +104,7 @@ class LampState():
 
     def __iadd__(self, o: 'Union[LampState, Iterable[LampState]]') -> 'LampState':
         if isinstance(o, LampState):
-            for typ in ["Intesity", "Position", "Colour", "Beam", "Effect"]:
+            for typ in ["Intesity", "Position", "Color", "Beam", "Effect"]:
                 if getattr(self, typ) and getattr(o, typ):
                     setattr(self, typ, getattr(self, typ) + getattr(o, typ))
                 elif not getattr(self, typ) and getattr(o, typ):
@@ -124,7 +124,7 @@ class LampState():
             ret_str += "P"
         else:
             ret_str += "."
-        if self.Colour:
+        if self.Color:
             ret_str += "C"
         else:
             ret_str += "."
