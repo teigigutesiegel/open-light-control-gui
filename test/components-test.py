@@ -4,10 +4,10 @@ from PyQt5.QtCore import *
 
 import sys
 
-from OpenLightControlGui import AbstractDirectoryView
+from OpenLightControlGui import AbstractDirectoryView, PalletteDirectoryView
 
 app = QApplication(sys.argv)
 
-window = AbstractDirectoryView()
+window = PalletteDirectoryView()
 window.show()
 sys.exit(app.exec_())

@@ -7,10 +7,8 @@ from .FlowLayout import FlowLayout
 import sys
 from typing import Optional
 from numbers import Number
-from random import randint
 import os
 basepath = os.path.dirname(__file__)
-
 
 
 class AbstractDirectoryView(QMainWindow):
@@ -45,14 +43,15 @@ class AbstractDirectoryView(QMainWindow):
         self._guard_mode = False
 
         self.setWindowTitle(f"{self._title} Directory")
-        
+
         self._mainGrid = FlowLayout(margin=0, spacing=0)
         self._mainTable = QTableWidget(self._placeholder, 4)
-        self._mainTable.setHorizontalHeaderLabels(["Name", "Colour", "Comment", "Kind"])
+        self._mainTable.setHorizontalHeaderLabels(
+            ["Name", "Colour", "Comment", "Kind"])
         self._mainTable.setStyleSheet("color: #fff")
 
         self._fill_grid()
-        
+
         self._mainStack = QStackedLayout()
         self._gridWid = QWidget()
         self._gridWid.setLayout(self._mainGrid)
@@ -85,62 +84,25 @@ class AbstractDirectoryView(QMainWindow):
         self._guardbut.clicked.connect(self._toggle_guard)
         self._tablebut = QPushButton()
         self._tablebut.setIconSize(QSize(30, 30))
-        self._tablebut.setIcon(QIcon(os.path.join(basepath, "../../assets/icons/table.svg")))
+        self._tablebut.setIcon(
+            QIcon(os.path.join(basepath, "../../assets/icons/table.svg")))
         self._tablebut.clicked.connect(self._toggle_table)
         self._lightbut = QPushButton()
         self._lightbut.setIconSize(QSize(30, 30))
-        self._lightbut.setIcon(QIcon(os.path.join(basepath, "../../assets/icons/lighttable.svg")))
+        self._lightbut.setIcon(
+            QIcon(os.path.join(basepath, "../../assets/icons/lighttable.svg")))
         self._lightbut.clicked.connect(self._toggle_full_color)
         self._mainToolbar.addWidget(self._guardbut)
         self._mainToolbar.addWidget(self._tablebut)
         self._mainToolbar.addWidget(self._lightbut)
         self._guardbut.setFixedHeight(36)
         self.addToolBar(self._mainToolbar)
-        
-        kindToolbar = QToolBar()
-        kindwid = QWidget()
-        kindlay = QGridLayout()
-        kindlay.setSpacing(0)
-        kindlay.setContentsMargins(0,0,0,0)
-        i = QLabel("I")
-        p = QLabel("P")
-        c = QLabel("C")
-        c.setStyleSheet("background-color: #00f;")
-        b = QLabel("B")
-        kindlay.addWidget(i, 0, 0)
-        kindlay.addWidget(p, 0, 1)
-        kindlay.addWidget(c, 0, 2)
-        kindlay.addWidget(b, 0, 3)
-        e = QLabel("E")
-        t = QLabel("T")
-        l = QLabel("L")
-        kindlay.addWidget(e, 1, 0)
-        kindlay.addWidget(t, 1, 1)
-        kindlay.addWidget(l, 1, 2)
-        kindwid.setLayout(kindlay)
-        kindToolbar.addWidget(kindwid)
-        font = i.font()
-        font.setPointSize(8)
-        for lab in [i, p, c, b, e, t, l]:
-            lab.setFont(font)
-            lab.setStyleSheet(lab.styleSheet() + "color: #fff")
-            # lab.setMargin(1)
-            lab.setAlignment(Qt.AlignCenter)
-            lab.setFixedSize(15, 15)
-        self.addToolBar(kindToolbar)
-    
+
     def _fill_grid(self):
         for i in range(self._placeholder):
             item = self.ViewTile(i+1)
             self._mainGrid.addWidget(item)
             self._mainTable.setRowHidden(i, True)
-    
-    def _fill_grid_rand(self, num = 20):
-        """for testing only"""
-        for i in range(num):
-            num_ = randint(1, self._placeholder)
-            self.setItem(num_, self.ViewTile(
-                num_, f"test - {num_}", QColor.fromRgb(randint(0, 255), randint(0, 255), randint(0, 255))))
 
     def getItem(self, pos: int) -> Optional[object]:
         return self._items.get(pos)
@@ -152,7 +114,7 @@ class AbstractDirectoryView(QMainWindow):
         self._mainGrid.insertWidget(pos-1, item)
         item.clicked.connect(lambda x, num=item._num: print(f"pressed {num}"))
         # self._mainGrid.replaceWidget(self._mainGrid.itemAt(pos-1).widget(), self.ViewTile(pos+1, item.name, item.getColor()))
-    
+
     def _add_table_item(self, item: "ViewTile") -> None:
         wid = QTableWidgetItem(str(item._title))
         self._mainTable.setItem(item._num-1, 0, wid)
@@ -176,7 +138,7 @@ class AbstractDirectoryView(QMainWindow):
 
     def isInGuardMode(self) -> bool:
         return self._guard_mode
-    
+
     def setGuardMode(self, guard_mode: bool) -> None:
         self._guard_mode = guard_mode
 
@@ -198,7 +160,7 @@ class AbstractDirectoryView(QMainWindow):
             self._guardbut.setCheckable(True)
             self._guardbut.setChecked(True)
             self._guard_mode = True
-    
+
     def _toggle_table(self) -> None:
         if self._mainStack.currentIndex() == 0:
             self._mainStack.setCurrentIndex(1)
@@ -208,7 +170,7 @@ class AbstractDirectoryView(QMainWindow):
             self._mainStack.setCurrentIndex(0)
             self._tablebut.setChecked(False)
             self._tablebut.setCheckable(False)
-    
+
     def _toggle_full_color(self) -> None:
         if self._lightbut.isCheckable():
             for item in self._items.values():
@@ -220,11 +182,12 @@ class AbstractDirectoryView(QMainWindow):
                 item.setFullColor(True)
             self._lightbut.setCheckable(True)
             self._lightbut.setChecked(True)
-    
+
     def _resize_table(self) -> None:
-        self._mainTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self._mainTable.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeToContents)
         self._mainTable.horizontalHeader().setSectionResizeMode(0, QHeaderView.Interactive)
-    
+
     class ViewTile(QPushButton):
         _title: str = ""
         _num: int
@@ -234,7 +197,6 @@ class AbstractDirectoryView(QMainWindow):
         _mainVLay: QVBoxLayout
         _headerLay: QHBoxLayout
         _numLabel: QLabel
-        _dirIndicator: QLabel
         _mainLabel: QLabel
         _mainLay: QVBoxLayout
         _mainWidget: QWidget
@@ -252,7 +214,7 @@ class AbstractDirectoryView(QMainWindow):
             self._numLabel = QLabel(str(self._num))
             self._headerLay.addWidget(self._numLabel)
             self._mainVLay.addLayout(self._headerLay)
-            
+
             self._mainLabel = QLabel(self._title)
             pol = QSizePolicy()
             pol.setVerticalPolicy(QSizePolicy.Expanding)
@@ -265,12 +227,6 @@ class AbstractDirectoryView(QMainWindow):
             font.setPointSize(7)
             self._numLabel.setFont(font)
             self._mainLabel.setFont(font)
-
-            if title:
-                self._dirIndicator = QLabel(self._getdirIndicator())
-                self._dirIndicator.setAlignment(Qt.AlignRight)
-                self._headerLay.addWidget(self._dirIndicator)
-                self._dirIndicator.setFont(font)
 
             self._mainVLay.addWidget(self._mainLabel)
             self._mainVLay.setSpacing(0)
@@ -288,59 +244,14 @@ class AbstractDirectoryView(QMainWindow):
                 self.clearColour()
             self.setFixedSize(AbstractDirectoryView._viewTileSize,
                               AbstractDirectoryView._viewTileSize)
-        
-        def hasIntensity(self) -> bool:
-            return False
-        
-        def hasPosition(self) -> bool:
-            return False
-        
-        def hasColour(self) -> bool:
-            return True
-        
-        def hasBeam(self) -> bool:
-            return False
-        
-        def hasEffects(self) -> bool:
-            return False
-        
-        def hasTime(self) -> bool:
-            return False
-        
-        def hasControl(self) -> bool:
-            return False
-        
-        def _getdirIndicator(self) -> str:
-            ret_str = ""
-            if self.hasIntensity():
-                ret_str += "I"
-            else:
-                ret_str += "."
-            if self.hasPosition():
-                ret_str += "P"
-            else:
-                ret_str += "."
-            if self.hasColour():
-                ret_str += "C"
-            else:
-                ret_str += "."
-            if self.hasBeam():
-                ret_str += "B"
-            else:
-                ret_str += "."
-            if self.hasEffects():
-                ret_str += "E"
-            if self.hasTime():
-                ret_str += "T"
-            if self.hasControl():
-                ret_str += "L"
-            return ret_str
 
         def setActive(self, active: bool) -> None:
             if active:
-                self.setStyleSheet(self.styleSheet() + "QWidget { color: #fff; background-color: #3a3a3a }")
+                self.setStyleSheet(
+                    self.styleSheet() + "QWidget { color: #fff; background-color: #3a3a3a }")
             else:
-                self.setStyleSheet(self.styleSheet() + "QWidget { color: #d3d3d3 }")
+                self.setStyleSheet(self.styleSheet() +
+                                   "QWidget { color: #d3d3d3 }")
 
         def setFullColor(self, fullColor: bool) -> None:
             self._fullColor = fullColor
@@ -356,13 +267,14 @@ class AbstractDirectoryView(QMainWindow):
                     self.setStyleSheet(
                         "QWidget { " + "background-color: rgb({0:d}, {1:d}, {2:d})".format(*color.getRgb()) + " }")
                     if self.getColour().getHsvF()[2] >= 0.5:
-                        self.setStyleSheet(self.styleSheet() + "QWidget { color:#000}")
+                        self.setStyleSheet(
+                            self.styleSheet() + "QWidget { color:#000}")
                 else:
                     self.clearColour()
             else:
                 self.setStyleSheet("""
-                QWidget {"""+"border: 2px solid rgb({0:d}, {1:d}, {2:d});".format(*color.getRgb())+
-                """
+                QWidget {"""+"border: 2px solid rgb({0:d}, {1:d}, {2:d});".format(*color.getRgb()) +
+                                   """
                     border-radius: 5px;
                 }
                 QLabel {
@@ -371,7 +283,7 @@ class AbstractDirectoryView(QMainWindow):
                 }
                 """)
                 self.setActive(self._active)
-        
+
         def getColour(self) -> Optional[QColor]:
             if self._color:
                 return self._color
@@ -392,6 +304,7 @@ class AbstractDirectoryView(QMainWindow):
             }
             """)
             self.setActive(self._active)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
