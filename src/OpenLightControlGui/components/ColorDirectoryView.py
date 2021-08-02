@@ -16,10 +16,7 @@ class ColorDirectoryView(PalletteDirectoryView):
     _colorbut: QPushButton
 
     def __init__(self, parent: Optional['QWidget'] = None) -> None:
-        self._title = "Colour"
-        super().__init__(parent=parent)
-
-        self._c.setStyleSheet("background-color: #00f; color: #fff")
+        super().__init__("Color", parent=parent)
 
         self._colorToolbar = QToolBar()
         self._colorbut = QPushButton()
@@ -38,7 +35,7 @@ class ColorDirectoryView(PalletteDirectoryView):
         wid.setLayout(lay)
         win = QMainWindow(self)
         win.setCentralWidget(wid)
-        win.setWindowTitle("Colour Picker")
+        win.setWindowTitle("Color Picker")
         win.setGeometry(0, 0, 500, 500)
         win.show()
 

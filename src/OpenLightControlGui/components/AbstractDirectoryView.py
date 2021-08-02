@@ -25,15 +25,6 @@ class AbstractDirectoryView(QMainWindow):
     _guardbut: QPushButton
     _tablebut: QPushButton
     _lightbut: QPushButton
-    DirectoryTypes = {
-        "I": "Intensity",
-        "P": "Position",
-        "C": "Colour",
-        "B": "Beam",
-        "E": "Effects",
-        "T": "Time",
-        "L": "Control"
-    }
     _viewTileSize: Number = 75
     _placeholder: int = 1000
 
@@ -42,12 +33,10 @@ class AbstractDirectoryView(QMainWindow):
         self._items = {}
         self._guard_mode = False
 
-        self.setWindowTitle(f"{self._title} Directory")
-
         self._mainGrid = FlowLayout(margin=0, spacing=0)
         self._mainTable = QTableWidget(self._placeholder, 4)
         self._mainTable.setHorizontalHeaderLabels(
-            ["Name", "Colour", "Comment", "Kind"])
+            ["Name", "Color", "Comment", "Kind"])
         self._mainTable.setStyleSheet("color: #fff")
 
         self._fill_grid()
@@ -118,9 +107,9 @@ class AbstractDirectoryView(QMainWindow):
     def _add_table_item(self, item: "ViewTile") -> None:
         wid = QTableWidgetItem(str(item._title))
         self._mainTable.setItem(item._num-1, 0, wid)
-        if item.getColour():
+        if item.getColor():
             colwid = QTableWidgetItem()
-            colwid.setBackground(item.getColour())
+            colwid.setBackground(item.getColor())
             colwid.setFlags(Qt.ItemIsEnabled)
             self._mainTable.setItem(item._num-1, 1, colwid)
         wid = QTableWidgetItem(item._getdirIndicator())
@@ -239,9 +228,9 @@ class AbstractDirectoryView(QMainWindow):
             self.setLayout(self._mainLay)
 
             if color:
-                self.setColour(color)
+                self.setColor(color)
             else:
-                self.clearColour()
+                self.clearColor()
             self.setFixedSize(AbstractDirectoryView._viewTileSize,
                               AbstractDirectoryView._viewTileSize)
 
@@ -255,22 +244,22 @@ class AbstractDirectoryView(QMainWindow):
 
         def setFullColor(self, fullColor: bool) -> None:
             self._fullColor = fullColor
-            col = self.getColour()
+            col = self.getColor()
             if col:
-                self.clearColour()
-                self.setColour(col)
+                self.clearColor()
+                self.setColor(col)
 
-        def setColour(self, color: QColor) -> None:
+        def setColor(self, color: QColor) -> None:
             self._color = color
             if self._fullColor:
-                if self.getColour():
+                if self.getColor():
                     self.setStyleSheet(
                         "QWidget { " + "background-color: rgb({0:d}, {1:d}, {2:d})".format(*color.getRgb()) + " }")
-                    if self.getColour().getHsvF()[2] >= 0.5:
+                    if self.getColor().getHsvF()[2] >= 0.5:
                         self.setStyleSheet(
                             self.styleSheet() + "QWidget { color:#000}")
                 else:
-                    self.clearColour()
+                    self.clearColor()
             else:
                 self.setStyleSheet("""
                 QWidget {"""+"border: 2px solid rgb({0:d}, {1:d}, {2:d});".format(*color.getRgb()) +
@@ -284,13 +273,13 @@ class AbstractDirectoryView(QMainWindow):
                 """)
                 self.setActive(self._active)
 
-        def getColour(self) -> Optional[QColor]:
+        def getColor(self) -> Optional[QColor]:
             if self._color:
                 return self._color
             else:
                 return None
 
-        def clearColour(self) -> None:
+        def clearColor(self) -> None:
             self._color = None
             self.setStyleSheet("""
             QWidget {

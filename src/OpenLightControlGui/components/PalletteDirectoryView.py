@@ -10,46 +10,51 @@ from random import randint
 
 
 class PalletteDirectoryView(AbstractDirectoryView):
-    _i: QLabel
-    _p: QLabel
-    _c: QLabel
-    _b: QLabel
-    _e: QLabel
-    _t: QLabel
-    _l: QLabel
+    _I: QLabel
+    _P: QLabel
+    _C: QLabel
+    _B: QLabel
+    _E: QLabel
+    _T: QLabel
+    _L: QLabel
 
-    def __init__(self, parent: Optional['QWidget'] = None) -> None:
+    DirectoryTypes = {
+        "I": "Intensity",
+        "P": "Position",
+        "C": "Color",
+        "B": "Beam",
+        "E": "Effects",
+        "T": "Time",
+        "L": "Control"
+    }
+
+    def __init__(self, title: Optional[str] = None, parent: Optional['QWidget'] = None) -> None:
         super().__init__(parent=parent)
+
+        self._title = title
+        self.setWindowTitle(f"{self._title} Directory")
 
         kindToolbar = QToolBar()
         kindwid = QWidget()
         kindlay = QGridLayout()
         kindlay.setSpacing(0)
         kindlay.setContentsMargins(0, 0, 0, 0)
-        self._i = QLabel("I")
-        self._p = QLabel("P")
-        self._c = QLabel("C")
-        self._b = QLabel("B")
-        kindlay.addWidget(self._i, 0, 0)
-        kindlay.addWidget(self._p, 0, 1)
-        kindlay.addWidget(self._c, 0, 2)
-        kindlay.addWidget(self._b, 0, 3)
-        self._e = QLabel("E")
-        self._t = QLabel("T")
-        self._l = QLabel("L")
-        kindlay.addWidget(self._e, 1, 0)
-        kindlay.addWidget(self._t, 1, 1)
-        kindlay.addWidget(self._l, 1, 2)
-        kindwid.setLayout(kindlay)
-        kindToolbar.addWidget(kindwid)
-        font = self._i.font()
-        font.setPointSize(8)
-        for lab in [self._i, self._p, self._c, self._b, self._e, self._t, self._l]:
+        for i, key in enumerate(self.DirectoryTypes.keys()):
+            lab = QLabel(key)
+            font = lab.font()
+            font.setPointSize(8)
             lab.setFont(font)
-            lab.setStyleSheet(lab.styleSheet() + "color: #fff")
-            # lab.setMargin(1)
+            if self.DirectoryTypes.get(key, "") == title:
+                lab.setStyleSheet("background-color: #00f; color: #fff")
+            else:
+                lab.setStyleSheet(lab.styleSheet() + "color: #fff")
             lab.setAlignment(Qt.AlignCenter)
             lab.setFixedSize(15, 15)
+            setattr(self, f"_{key}", lab)
+            kindlay.addWidget(lab, i//4, i%4)
+        
+        kindwid.setLayout(kindlay)
+        kindToolbar.addWidget(kindwid)
         self.addToolBar(kindToolbar)
 
     def _fill_grid_rand(self, num=20):
@@ -84,7 +89,7 @@ class PalletteDirectoryView(AbstractDirectoryView):
         def hasPosition(self) -> bool:
             return False
 
-        def hasColour(self) -> bool:
+        def hasColor(self) -> bool:
             return True
 
         def hasBeam(self) -> bool:
@@ -109,7 +114,7 @@ class PalletteDirectoryView(AbstractDirectoryView):
                 ret_str += "P"
             else:
                 ret_str += "."
-            if self.hasColour():
+            if self.hasColor():
                 ret_str += "C"
             else:
                 ret_str += "."
