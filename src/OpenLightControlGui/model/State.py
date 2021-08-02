@@ -1,8 +1,8 @@
 from typing import Iterable, Optional, Union
 
-from .Lamp import Lamp
-from .Group import Group
-from .LampState import LampState
+from OpenLightControlGui.model.Lamp import Lamp
+from OpenLightControlGui.model.Group import Group
+from OpenLightControlGui.model.LampState import LampState
 
 class State():
     _groups: 'list[Group]'

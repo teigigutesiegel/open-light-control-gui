@@ -1,6 +1,6 @@
 from typing import Iterable, Optional, Union
 
-from .Lamp import Lamp
+from OpenLightControlGui.model.Lamp import Lamp
 
 class Group():
     _lamps: 'list[Union[Lamp, Group]]'

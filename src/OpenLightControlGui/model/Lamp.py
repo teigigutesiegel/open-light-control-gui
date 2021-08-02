@@ -1,7 +1,7 @@
 from typing import Optional, Iterable, Union
 from numbers import Number
 
-from .Address import Address
+from OpenLightControlGui.model.Address import Address
 from OpenLightControlGui.fixture_model.Fixture import Fixture
 from OpenLightControlGui.fixture_model.Mode import Mode
 from OpenLightControlGui.fixture_model.AbstractChannel import AbstractChannel

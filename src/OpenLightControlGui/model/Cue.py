@@ -1,5 +1,5 @@
 from typing import Iterable, Union
-from .State import State
+from OpenLightControlGui.model.State import State
 
 class Cue():
     _states: 'list[State]'

@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from .AbstractDirectoryView import AbstractDirectoryView
+from OpenLightControlGui.components.AbstractDirectoryView import AbstractDirectoryView
 
 import sys
 from typing import Optional
@@ -10,6 +10,13 @@ from random import randint
 
 
 class PalletteDirectoryView(AbstractDirectoryView):
+    _i: QLabel
+    _p: QLabel
+    _c: QLabel
+    _b: QLabel
+    _e: QLabel
+    _t: QLabel
+    _l: QLabel
 
     def __init__(self, parent: Optional['QWidget'] = None) -> None:
         super().__init__(parent=parent)
@@ -19,34 +26,31 @@ class PalletteDirectoryView(AbstractDirectoryView):
         kindlay = QGridLayout()
         kindlay.setSpacing(0)
         kindlay.setContentsMargins(0, 0, 0, 0)
-        i = QLabel("I")
-        p = QLabel("P")
-        c = QLabel("C")
-        c.setStyleSheet("background-color: #00f;")
-        b = QLabel("B")
-        kindlay.addWidget(i, 0, 0)
-        kindlay.addWidget(p, 0, 1)
-        kindlay.addWidget(c, 0, 2)
-        kindlay.addWidget(b, 0, 3)
-        e = QLabel("E")
-        t = QLabel("T")
-        l = QLabel("L")
-        kindlay.addWidget(e, 1, 0)
-        kindlay.addWidget(t, 1, 1)
-        kindlay.addWidget(l, 1, 2)
+        self._i = QLabel("I")
+        self._p = QLabel("P")
+        self._c = QLabel("C")
+        self._b = QLabel("B")
+        kindlay.addWidget(self._i, 0, 0)
+        kindlay.addWidget(self._p, 0, 1)
+        kindlay.addWidget(self._c, 0, 2)
+        kindlay.addWidget(self._b, 0, 3)
+        self._e = QLabel("E")
+        self._t = QLabel("T")
+        self._l = QLabel("L")
+        kindlay.addWidget(self._e, 1, 0)
+        kindlay.addWidget(self._t, 1, 1)
+        kindlay.addWidget(self._l, 1, 2)
         kindwid.setLayout(kindlay)
         kindToolbar.addWidget(kindwid)
-        font = i.font()
+        font = self._i.font()
         font.setPointSize(8)
-        for lab in [i, p, c, b, e, t, l]:
+        for lab in [self._i, self._p, self._c, self._b, self._e, self._t, self._l]:
             lab.setFont(font)
             lab.setStyleSheet(lab.styleSheet() + "color: #fff")
             # lab.setMargin(1)
             lab.setAlignment(Qt.AlignCenter)
             lab.setFixedSize(15, 15)
         self.addToolBar(kindToolbar)
-
-        self._fill_grid_rand()
 
     def _fill_grid_rand(self, num=20):
         """for testing only"""
@@ -125,6 +129,6 @@ class PalletteDirectoryView(AbstractDirectoryView):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    window = AbstractDirectoryView()
+    window = PalletteDirectoryView()
     window.show()
     sys.exit(app.exec_())

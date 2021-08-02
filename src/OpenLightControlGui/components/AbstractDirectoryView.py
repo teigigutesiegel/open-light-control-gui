@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from .FlowLayout import FlowLayout
+from OpenLightControlGui.components.FlowLayout import FlowLayout
 
 import sys
 from typing import Optional

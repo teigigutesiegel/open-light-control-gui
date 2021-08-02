@@ -1,7 +1,7 @@
 from typing import Iterable, Optional
 from numbers import Number
 
-from .Cue import Cue
+from OpenLightControlGui.model.Cue import Cue
 
 class Cuelist():
     _cues: 'dict[Number, Cue]'

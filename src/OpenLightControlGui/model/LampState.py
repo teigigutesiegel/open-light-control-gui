@@ -1,4 +1,5 @@
-from .Effect import Effect
+from OpenLightControlGui.model.Effect import Effect
+
 
 class LampState():
     pass
