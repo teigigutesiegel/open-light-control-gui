@@ -50,6 +50,13 @@ class AddFixtureWidget(QDialog):
 
         self.setLayout(self._mainLay)
     
+    def getFixtureCount(self) -> 'dict[str, int]':
+        return self._fixture_count
+
+    def setFixtureCount(self, fixture_count: 'dict[str, int]') -> None:
+        self._fixture_count = fixture_count
+        self._fill_list()
+    
     def _textchanged(self, text: str) -> None:
         self._search = text
         self._fill_list()
@@ -116,7 +123,7 @@ if __name__ == "__main__":
     def clicked():
         dlg = AddFixtureWidget(fixturesByManu, window)
         if dlg.exec():
-            print(dlg._fixture_count)
+            print(dlg.getFixtureCount())
         else:
             print("Cancel!")
     
