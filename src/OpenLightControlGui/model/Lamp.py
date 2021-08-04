@@ -22,36 +22,39 @@ class Lamp():
         else:
             self._address = []
     
-    def get_num(self) -> Number:
+    def _get_num(self) -> Number:
         return self._num
     
-    def get_mode(self) -> Mode:
+    def _set_num(self, num = Number):
+        self._num = num
+    
+    def _get_mode(self) -> Mode:
         return self._mode
     
-    def get_fixture(self) -> Fixture:
+    def _get_fixture(self) -> Fixture:
         return self.mode.fixture
     
-    def get_channels(self) -> 'list[AbstractChannel]':
+    def _get_channels(self) -> 'list[AbstractChannel]':
         return self.mode.channels
 
-    def get_address(self) -> 'list[Address]':
+    def _get_address(self) -> 'list[Address]':
         return self._address
     
-    def set_address(self, address: Iterable[Address]) -> None:
+    def _set_address(self, address: Iterable[Address]) -> None:
         self._address = [a for a in address]
     
     def add_address(self, address: Address) -> None:
         self._address.append(address)
     
-    def get_hasAddress(self) -> bool:
+    def _get_hasAddress(self) -> bool:
         return len(self._address) > 0
     
-    number: Number = property(get_num)
-    mode: Mode = property(get_mode)
-    fixture: Fixture = property(get_fixture)
-    channels: 'list[AbstractChannel]' = property(get_channels)
-    address: 'list[Address]' = property(get_address, set_address)
-    hasAddress: bool = property(get_hasAddress)
+    number: Number = property(_get_num, _set_num)
+    mode: Mode = property(_get_mode)
+    fixture: Fixture = property(_get_fixture)
+    channels: 'list[AbstractChannel]' = property(_get_channels)
+    address: 'list[Address]' = property(_get_address, _set_address)
+    hasAddress: bool = property(_get_hasAddress)
 
     def __eq__(self, o: 'Lamp') -> bool:
         return isinstance(o, Lamp) and self.address == o.address and self.mode == o.mode

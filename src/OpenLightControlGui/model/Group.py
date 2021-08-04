@@ -4,8 +4,10 @@ from OpenLightControlGui.model.Lamp import Lamp
 
 class Group():
     _lamps: 'list[Union[Lamp, Group]]'
+    _name: str
 
     def __init__(self, lamps: 'Optional[Union[Lamp, Iterable[Lamp], Group]]' = None) -> None:
+        self._name = ""
         self._lamps = []
         if lamps:
             if isinstance(lamps, Iterable):
@@ -31,7 +33,14 @@ class Group():
                 ret_list.append(item)
         return ret_list
     
+    def _get_name(self) -> str:
+        return self._name
+    
+    def _set_name(self, name: str) -> None:
+        self._name = name
+    
     lamps: 'list[Lamp]' = property(getLamps)
+    name: str = property(_get_name, _set_name)
     
     def includes(self, lamp: Lamp) -> bool:
         return lamp in self._lamps

@@ -17,6 +17,12 @@ class BaseState():
     def copy(self) -> 'BaseState':
         return BaseState(self.vals)
 
+    def _set_val(self, typ: str, val: Number) -> None:
+        self.vals[typ] = val
+    
+    def _get_val(self, typ: str) -> Optional[Number]:
+        self.vals.get(typ)
+
     def __add__(self, o: 'Union[BaseState, Iterable[BaseState]]') -> 'BaseState':
         s = self.copy()
         if isinstance(o, BaseState):
@@ -48,11 +54,13 @@ class BaseState():
         return self.__str__()
 
 
-class IntesityState(BaseState):
-    types = Literal["Intesity", "Indigo", "Smoke", "Fan"]
+class IntensityState(BaseState):
+    types = Literal["Intensity", "Indigo", "Smoke", "Fan"]
 
-    def copy(self) -> 'IntesityState':
-        return IntesityState(self.vals)
+    def copy(self) -> 'IntensityState':
+        return IntensityState(self.vals)
+
+    ## property = self._set_val / self._get_val
 
 
 class PositionState(BaseState):
@@ -77,21 +85,21 @@ class BeamState(BaseState):
 
 
 class LampState():
-    Intesity: Optional[IntesityState]
+    Intensity: Optional[IntensityState]
     Position: Optional[PositionState]
     Color: Optional[ColorState]
     Beam: Optional[BeamState]
     Effect: Optional[Iterable[Effect]]
 
-    def __init__(self, Intesity: Optional[IntesityState] = None, Position: Optional[PositionState] = None, Color: Optional[ColorState] = None, Beam: Optional[BeamState] = None, Effect_: Optional[Iterable[Effect]] = None) -> None:
-        self.Intesity = Intesity
+    def __init__(self, Intensity: Optional[IntensityState] = None, Position: Optional[PositionState] = None, Color: Optional[ColorState] = None, Beam: Optional[BeamState] = None, Effect_: Optional[Iterable[Effect]] = None) -> None:
+        self.Intensity = Intensity
         self.Position = Position
         self.Color = Color
         self.Beam = Beam
         self.Effect = Effect_
 
     def copy(self) -> 'LampState':
-        return LampState(self.Intesity, self.Position, self.Color, self.Beam, self.Effect)
+        return LampState(self.Intensity, self.Position, self.Color, self.Beam, self.Effect)
 
     def __add__(self, o: 'Union[LampState, Iterable[LampState]]') -> 'LampState':
         s = self.copy()
@@ -104,7 +112,7 @@ class LampState():
 
     def __iadd__(self, o: 'Union[LampState, Iterable[LampState]]') -> 'LampState':
         if isinstance(o, LampState):
-            for typ in ["Intesity", "Position", "Color", "Beam", "Effect"]:
+            for typ in ["Intensity", "Position", "Color", "Beam", "Effect"]:
                 if getattr(self, typ) and getattr(o, typ):
                     setattr(self, typ, getattr(self, typ) + getattr(o, typ))
                 elif not getattr(self, typ) and getattr(o, typ):
@@ -116,7 +124,7 @@ class LampState():
 
     def __str__(self) -> str:
         ret_str = ""
-        if self.Intesity:
+        if self.Intensity:
             ret_str += "I"
         else:
             ret_str += "."
