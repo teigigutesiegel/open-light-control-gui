@@ -1,10 +1,9 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QWidget, QMainWindow, QTableWidget, QTableWidgetItem, QScrollArea, QStackedLayout, QToolBar, QPushButton, QHeaderView, QHBoxLayout, QVBoxLayout, QLabel, QSizePolicy
+from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtCore import QSize, Qt, pyqtSignal
 
-from OpenLightControlGui.components.FlowLayout import FlowLayout
+from OpenLightControlGui import FlowLayout
 
-import sys
 from typing import Optional
 from numbers import Number
 import os
@@ -28,15 +27,16 @@ class AbstractDirectoryView(QMainWindow):
     _viewTileSize: Number = 75
     _placeholder: int = 1000
 
+    tile_selected = pyqtSignal(int)
+
     def __init__(self, parent: Optional['QWidget'] = None) -> None:
         super().__init__(parent=parent)
         self._items = {}
         self._guard_mode = False
 
         self._mainGrid = FlowLayout(margin=0, spacing=0)
-        self._mainTable = QTableWidget(self._placeholder, 4)
-        self._mainTable.setHorizontalHeaderLabels(
-            ["Name", "Color", "Comment", "Kind"])
+        self._mainTable = QTableWidget(self._placeholder, 3)
+        self._mainTable.setHorizontalHeaderLabels(["Name", "Color", "Comment"])
         self._mainTable.setStyleSheet("color: #fff")
 
         self._fill_grid()
@@ -90,10 +90,11 @@ class AbstractDirectoryView(QMainWindow):
     def _fill_grid(self):
         for i in range(self._placeholder):
             item = self.ViewTile(i+1)
+            item.clicked.connect(lambda x, num=item._num: self.tile_selected.emit(num))
             self._mainGrid.addWidget(item)
             self._mainTable.setRowHidden(i, True)
 
-    def getItem(self, pos: int) -> Optional[object]:
+    def getItem(self, pos: int) -> 'Optional[ViewTile]':
         return self._items.get(pos)
 
     def setItem(self, pos: int, item: "ViewTile") -> None:
@@ -101,8 +102,6 @@ class AbstractDirectoryView(QMainWindow):
         self._add_table_item(item)
         self._mainGrid.removeWidget(self._mainGrid.itemAt(pos-1).widget())
         self._mainGrid.insertWidget(pos-1, item)
-        item.clicked.connect(lambda x, num=item._num: print(f"pressed {num}"))
-        # self._mainGrid.replaceWidget(self._mainGrid.itemAt(pos-1).widget(), self.ViewTile(pos+1, item.name, item.getColor()))
 
     def _add_table_item(self, item: "ViewTile") -> None:
         wid = QTableWidgetItem(str(item._title))
@@ -112,9 +111,6 @@ class AbstractDirectoryView(QMainWindow):
             colwid.setBackground(item.getColor())
             colwid.setFlags(Qt.ItemIsEnabled)
             self._mainTable.setItem(item._num-1, 1, colwid)
-        wid = QTableWidgetItem(item._getdirIndicator())
-        wid.setFlags(Qt.ItemIsEnabled)
-        self._mainTable.setItem(item._num-1, 3, wid)
         self._mainTable.setRowHidden(item._num-1, False)
         self._resize_table()
 
@@ -296,6 +292,9 @@ class AbstractDirectoryView(QMainWindow):
 
 
 if __name__ == "__main__":
+    import sys
+    from PyQt5.QtWidgets import QApplication
+
     app = QApplication(sys.argv)
 
     window = AbstractDirectoryView()

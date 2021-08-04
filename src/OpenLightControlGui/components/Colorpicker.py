@@ -6,7 +6,7 @@ from PyQt5.QtGui import QColor, QResizeEvent, QPaintEvent, QPainter, QConicalGra
 import numpy as np
 import sys
 
-from OpenLightControlGui.components.AspectLayout import AspectLayout
+from OpenLightControlGui import AspectLayout
 
 
 class ColorCircle(QWidget):

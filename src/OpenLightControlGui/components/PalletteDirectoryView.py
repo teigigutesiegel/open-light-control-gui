@@ -1,13 +1,10 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QToolBar, QGridLayout
+from PyQt5.QtGui import QColor
+from PyQt5.QtCore import Qt
 
-from OpenLightControlGui.components.AbstractDirectoryView import AbstractDirectoryView
+from OpenLightControlGui import AbstractDirectoryView
 
-import sys
 from typing import Optional
-from random import randint
-
 
 class PalletteDirectoryView(AbstractDirectoryView):
     _I: QLabel
@@ -34,6 +31,9 @@ class PalletteDirectoryView(AbstractDirectoryView):
         self._title = title
         self.setWindowTitle(f"{self._title} Directory")
 
+        self._mainTable.setColumnCount(4)
+        self._mainTable.setHorizontalHeaderItem(3, QTableWidgetItem("Kind"))
+
         kindToolbar = QToolBar()
         kindwid = QWidget()
         kindlay = QGridLayout()
@@ -56,13 +56,12 @@ class PalletteDirectoryView(AbstractDirectoryView):
         kindwid.setLayout(kindlay)
         kindToolbar.addWidget(kindwid)
         self.addToolBar(kindToolbar)
-
-    def _fill_grid_rand(self, num=20):
-        """for testing only"""
-        for i in range(num):
-            num_ = randint(1, self._placeholder)
-            self.setItem(num_, self.ViewTile(
-                num_, f"test - {num_}", QColor.fromRgb(randint(0, 255), randint(0, 255), randint(0, 255))))
+    
+    def _add_table_item(self, item: "ViewTile") -> None:
+        wid = QTableWidgetItem(item._getdirIndicator())
+        wid.setFlags(Qt.ItemIsEnabled)
+        self._mainTable.setItem(item._num-1, 3, wid)
+        return super()._add_table_item(item)
 
     class ViewTile(AbstractDirectoryView.ViewTile):
         _dirIndicator: QLabel
@@ -90,7 +89,7 @@ class PalletteDirectoryView(AbstractDirectoryView):
             return False
 
         def hasColor(self) -> bool:
-            return True
+            return False
 
         def hasBeam(self) -> bool:
             return False
@@ -132,8 +131,17 @@ class PalletteDirectoryView(AbstractDirectoryView):
 
 
 if __name__ == "__main__":
+    import sys
+    from PyQt5.QtWidgets import QApplication
+
     app = QApplication(sys.argv)
 
     window = PalletteDirectoryView()
+    if False:
+        from random import randint
+        for i in range(20):
+            num_ = randint(1, window._placeholder)
+            window.setItem(num_, window.ViewTile(
+                num_, f"test - {num_}", QColor.fromRgb(randint(0, 255), randint(0, 255), randint(0, 255))))
     window.show()
     sys.exit(app.exec_())

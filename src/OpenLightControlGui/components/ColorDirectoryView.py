@@ -1,12 +1,11 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QWidget, QPushButton, QToolBar, QMainWindow
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QSize
 
-from OpenLightControlGui.components.Colorpicker import ColorCircle
-from OpenLightControlGui.components.AspectLayout import AspectLayout
-from OpenLightControlGui.components.PalletteDirectoryView import PalletteDirectoryView
+from OpenLightControlGui import ColorCircle
+from OpenLightControlGui import AspectLayout
+from OpenLightControlGui import PalletteDirectoryView
 
-import sys
 from typing import Optional
 import os
 basepath = os.path.dirname(__file__)
@@ -40,6 +39,8 @@ class ColorDirectoryView(PalletteDirectoryView):
         win.show()
 
 if __name__ == "__main__":
+    import sys
+    from PyQt5.QtWidgets import QApplication
     app = QApplication(sys.argv)
 
     window = ColorDirectoryView()
