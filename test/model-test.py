@@ -25,7 +25,7 @@ def check_prop(obj, checkagain=True):
 
 mans: 'dict[str, Manufacturer]' = {key: Manufacturer(key, val) for key, val in json.load(open(ofl+"manufacturers.json")).items() if not "$" in key}
 fixturesByManu = {}
-fixtures = []
+fixtures: 'list[Fixture]' = []
 for key, man in mans.items():
     lis = os.listdir(ofl+key)
     fixturesByManu[key] = []
@@ -35,4 +35,5 @@ for key, man in mans.items():
         fixtures.append(temp)
 
 for fixture in fixtures:
-    check_prop(fixture)
+    print(f"{fixture.manufacturer.key}/{fixture.key}")
+    # check_prop(fixture)
