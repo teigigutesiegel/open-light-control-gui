@@ -88,7 +88,7 @@ class Group():
         return self
 
     def __str__(self) -> str:
-        return f"Group {', '.join(str(x) for x in self.getLamps())}"
+        return f"Group {', '.join([str(x) for x in self.getLamps()][:3])}[{len(self.getLamps())}]"
     
     def __repr__(self) -> str:
         return self.__str__()

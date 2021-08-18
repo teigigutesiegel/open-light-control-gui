@@ -60,10 +60,7 @@ class Lamp():
         return isinstance(o, Lamp) and self.address == o.address and self.mode == o.mode
 
     def __str__(self) -> str:
-        if self.hasAddress:
-            return f"{self.number}-{self.fixture.name}-{self.mode.name} at {self.address}"
-        else:
-            return f"{self.number}-{self.fixture.name}-{self.mode.name}"
+        return f"{self.number}-{self.fixture.name}"
     
     def __repr__(self) -> str:
         return self.__str__()
