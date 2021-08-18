@@ -5,11 +5,11 @@ from OpenLightControlGui.model.Group import Group
 from OpenLightControlGui.model.LampState import LampState
 
 class State():
-    _groups: 'list[Group]'
-    _state: 'Optional[LampState]'
+    _group: 'Group'
+    _state: 'LampState'
 
-    def __init__(self, groups: 'Optional[Union[Lamp, Iterable[Lamp], Group, Iterable[Group]]]' = None, state: 'Optional[LampState]' = None) -> None:
-        self._groups = []
+    def __init__(self, groups: 'Optional[Union[Lamp, Iterable[Lamp], Group, Iterable[Group]]]' = None, state: 'Optional[Union[LampState, Iterable[LampState]]]' = None) -> None:
+        self._group = Group()
         if groups:
             if isinstance(groups, Iterable):
                 for item in groups:
@@ -17,27 +17,31 @@ class State():
             else:
                 self.addItem(groups)
         
-        self._state = state
+        self._state = LampState()
+        if state:
+            if isinstance(state, Iterable):
+                for item in state:
+                    self.addState(item)
+            else:
+                self.addState(state)
 
     def addLamp(self, lamp: Lamp) -> None:
         self.addGroup(Group(lamp))
     
     def removeLamp(self, lamp: Lamp) -> None:
-        for i, group in enumerate(self._groups):
-            if group.includes(lamp):
-                self._groups.pop(i)
-                break
+        if self._group.includes(lamp):
+            self._group -= lamp
 
     def addGroup(self, group: Group) -> None:
-        self._groups.append(group)
+        self._group += group
     
     def removeGroup(self, group: Group) -> None:
-        self._groups.pop(self._groups.index(group))
+        self._group -= group
     
-    def getGroups(self) -> 'list[Group]':
-        return self._groups
+    def getGroup(self) -> 'Group':
+        return self._group
     
-    groups: 'list[Group]' = property(getGroups)
+    group: 'Group' = property(getGroup)
     
     def addItem(self, item: Union[Lamp, Group]) -> None:
         if isinstance(item, Lamp):
@@ -71,7 +75,7 @@ class State():
     state: LampState = property(getState, setState)
 
     def __str__(self) -> str:
-        return f"State of {self.groups}"
+        return f"State of {self.group}"
     
     def __repr__(self) -> str:
         return self.__str__()
