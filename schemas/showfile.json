@@ -1,0 +1,49 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/teigigutesiegel/open-light-control-gui/master/schemas/showfile.json",
+    "title": "Showfile for Open-Light-Control",
+    "description": "the Showfile saves the current state of a show, so that it can be restored",
+    "type": "object",
+    "properties": {
+        "fixtures": {
+            "type": "array",
+            "description": "patched fixtures",
+            "items": {
+                "type": "object",
+                "description": "a patched fixture",
+                "properties": {
+                    "num": {
+                        "type": "number",
+                        "description": "internal number of the fixture"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "fixture type format manufacturer/type"
+                    },
+                    "mode": {
+                        "type": "string",
+                        "description": "name of the selected mode"
+                    },
+                    "addresses": {
+                        "type": "array",
+                        "description": "DMX Addresses of the Fixture",
+                        "items": {
+                            "type": "object",
+                            "description": "Dmx Address",
+                            "properties": {
+                                "universe": {
+                                    "type": "integer",
+                                    "description": "Universe of the DMX Address"
+                                },
+                                "address": {
+                                    "type": "integer",
+                                    "description": "Address of the DMX Address"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
