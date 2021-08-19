@@ -1,17 +1,20 @@
-from typing import Optional, Iterable, Union
+from typing import Literal, Optional, Iterable, Union
 from numbers import Number
+from OpenLightControlGui.fixture_model.Capability import Capability
 
 from OpenLightControlGui.model.Address import Address
-from OpenLightControlGui.fixture_model.Fixture import Fixture
-from OpenLightControlGui.fixture_model.Mode import Mode
-from OpenLightControlGui.fixture_model.AbstractChannel import AbstractChannel
+from OpenLightControlGui.fixture_model import Fixture, Mode, AbstractChannel, CoarseChannel
+
+_cap_types = Literal["Intensity", "Position", "Color", "Beam", "Maintenance"]
 
 class Lamp():
     _address: 'list[Address]'
     _mode: Mode
     _num: Number
+    _cache: 'dict[str, object]'
 
     def __init__(self, num: Number, mode: Mode, address: Optional[Union[Address, Iterable[Address]]] = None) -> None:
+        self._cache = {}
         self._num = num
         self._mode = mode
         if address:
@@ -55,6 +58,42 @@ class Lamp():
     channels: 'list[AbstractChannel]' = property(_get_channels)
     address: 'list[Address]' = property(_get_address, _set_address)
     hasAddress: bool = property(_get_hasAddress)
+
+    def _get_dmxRange(self) -> int:
+        return len(self.mode.channels)
+    
+    def _get_capabilities(self) -> 'dict[_cap_types, Optional[Union[int, dict[str, int]]]]':
+        if not "capabilities" in self._cache.keys():
+            capabilities: 'dict[_cap_types, Optional[Union[int, dict[str, int]]]]' = {
+                "Intensity": None,
+                "Position": None,
+                "Color": None,
+                "Beam": None,
+                "Maintenance": None
+            }
+            for channelnum, channel in enumerate(self.channels):
+                if isinstance(channel, CoarseChannel):
+                    if channel.type == "Intensity":
+                        if len(channel.capabilities) == 1:
+                            cap = channel.capabilities[0]
+                            capabilities['Intensity'] = channelnum
+                    if "color" in channel.type.lower():
+                        if len(channel.capabilities) == 1:
+                            cap = channel.capabilities[0]
+                            if cap.type == "ColorIntensity":
+                                if not capabilities['Color']:
+                                    capabilities['Color'] = {}
+                                capabilities['Color'][cap.color] = channelnum
+            
+            self._cache["capabilities"] = capabilities
+        
+        return self._cache["capabilities"]
+
+
+
+    dmxRange: int = property(_get_dmxRange)
+    capabilities: 'dict[_cap_types, Optional[Union[int, dict[str, int]]]]' = property(
+        _get_capabilities)
 
     def __eq__(self, o: 'Lamp') -> bool:
         return isinstance(o, Lamp) and self.address == o.address and self.mode == o.mode
