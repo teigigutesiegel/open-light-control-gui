@@ -114,10 +114,10 @@
             "Intensity": {
                 "type": "object",
                 "properties": {
-                    "Intensity": { "type": "string" },
-                    "Intensity2": { "type": "string" },
-                    "Smoke": { "type": "string" },
-                    "Fan": { "type": "string" },
+                    "Intensity": { "type": "number" },
+                    "Intensity2": { "type": "number" },
+                    "Smoke": { "type": "number" },
+                    "Fan": { "type": "number" },
                     "Strobe": { "type": "string" }
                 }
             },
@@ -132,11 +132,11 @@
             "Color": {
                 "type": "object",
                 "properties": {
-                    "Hue": { "type": "string" },
-                    "Saturation": { "type": "string" },
-                    "Red": { "type": "string" },
-                    "Green": { "type": "string" },
-                    "Blue": { "type": "string" },
+                    "Hue": { "type": "number" },
+                    "Saturation": { "type": "number" },
+                    "Red": { "type": "integer" },
+                    "Green": { "type": "integer" },
+                    "Blue": { "type": "integer" },
                     "Slot": { "type": "string" },
                     "Slot2": { "type": "string" },
                     "ColorFx": { "type": "string" }
