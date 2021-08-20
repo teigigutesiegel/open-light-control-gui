@@ -40,9 +40,57 @@
                                     "description": "Address of the DMX Address"
                                 }
                             }
-                        }
+                        },
+                        "minItems": 1
                     }
-                }
+                },
+                "required": ["num", "type", "mode"]
+            }
+        },
+        "groups": {
+            "type": "array",
+            "description": "added groups",
+            "items": {
+                "type": "object",
+                "description": "a group",
+                "properties": {
+                    "num": {
+                        "type": "integer",
+                        "description": "internal group number"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "name of the group"
+                    },
+                    "lamps": {
+                        "type": "array",
+                        "description": "group members",
+                        "items": {
+                            "type": "integer",
+                            "description": "number of lamp"
+                        }
+                    },
+                    "groups": {
+                        "type": "array",
+                        "description": "group members",
+                        "items": {
+                            "type": "integer",
+                            "description": "number of group"
+                        }
+                    },
+                    "color": {
+                        "type": "array",
+                        "description": "RGB Tuple",
+                        "items": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 255
+                        },
+                        "minItems": 3,
+                        "maxItems": 3
+                    }
+                },
+                "required": ["num", "name"]
             }
         }
     }
