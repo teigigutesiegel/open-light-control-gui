@@ -17,7 +17,7 @@ class LampState():
                 self.vals = {}
 
         def copy(self) -> 'LampState.BaseState':
-            return LampState.BaseState(self.vals)
+            return LampState.BaseState(self.vals.copy())
 
         def _set_val(self, typ: str, val: Union[Entity, str]) -> None:
             self.vals[typ] = val
@@ -62,7 +62,7 @@ class LampState():
         types = Literal["Intensity", "Intensity2", "Smoke", "Fan", "Strobe"]
 
         def copy(self) -> 'LampState.IntensityState':
-            return LampState.IntensityState(self.vals)
+            return LampState.IntensityState(self.vals.copy())
 
         def _set_i(self, val: Entity) -> None:
             self._set_val("Intensity", val)
@@ -104,7 +104,7 @@ class LampState():
         types = Literal["Pan", "Tilt", "PosTime"]
 
         def copy(self) -> 'LampState.PositionState':
-            return LampState.PositionState(self.vals)
+            return LampState.PositionState(self.vals.copy())
 
         def _set_p(self, val: Entity) -> None:
             self._set_val("Pan", val)
@@ -133,7 +133,7 @@ class LampState():
                         "Green", "Blue", "Slot", "Slot2", "ColorFx"]
 
         def copy(self) -> 'LampState.ColorState':
-            return LampState.ColorState(self.vals)
+            return LampState.ColorState(self.vals.copy())
 
         def _set_h(self, val: Entity) -> None:
             self._set_val("Hue", val)
@@ -197,7 +197,7 @@ class LampState():
                         "Gobo2Shake", "Focus", "Prism", "PrismRot", "PrismShake"]
 
         def copy(self) -> 'LampState.BeamState':
-            return LampState.BeamState(self.vals)
+            return LampState.BeamState(self.vals.copy())
 
         def _set_g(self, val: Entity) -> None:
             self._set_val("Gobo", val)
@@ -272,7 +272,7 @@ class LampState():
 
     class MaintenanceState(BaseState):
         def copy(self) -> 'LampState.MaintenanceState':
-            return LampState.MaintenanceState(self.vals)
+            return LampState.MaintenanceState(self.vals.copy())
         
         def set_val(self, typ: str) -> None:
             self.vals = { typ: True }
