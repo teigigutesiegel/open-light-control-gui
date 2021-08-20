@@ -42,7 +42,7 @@ class Group():
     lamps: 'list[Lamp]' = property(getLamps)
     name: str = property(_get_name, _set_name)
     
-    def includes(self, lamp: Lamp) -> bool:
+    def includes(self, lamp: 'Union[Lamp, Group]') -> bool:
         return lamp in self._lamps
     
     def copy(self) -> 'Group':
