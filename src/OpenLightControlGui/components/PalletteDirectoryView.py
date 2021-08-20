@@ -25,8 +25,8 @@ class PalletteDirectoryView(AbstractDirectoryView):
         "L": "Control"
     }
 
-    def __init__(self, title: Optional[str] = None, parent: Optional['QWidget'] = None) -> None:
-        super().__init__(parent=parent)
+    def __init__(self, title: Optional[str] = None, parent: Optional['QWidget'] = None, placeholder: int = 1000) -> None:
+        super().__init__(parent=parent, placeholder=placeholder)
 
         self._title = title
         self.setWindowTitle(f"{self._title} Directory")
@@ -65,6 +65,13 @@ class PalletteDirectoryView(AbstractDirectoryView):
 
     class ViewTile(AbstractDirectoryView.ViewTile):
         _dirIndicator: QLabel
+        hasIntensity = False
+        hasPosition = False
+        hasColor = False
+        hasBeam = False
+        hasEffects = False
+        hasTime = False
+        hasControl = False
 
         def __init__(self, num: int, title: Optional[str] = None, color: Optional[QColor] = None, fullColor: bool = False) -> None:
             super().__init__(num, title, color, fullColor)
@@ -82,53 +89,34 @@ class PalletteDirectoryView(AbstractDirectoryView):
                 font.setPointSize(7)
                 self._dirIndicator.setFont(font)
 
-        def hasIntensity(self) -> bool:
-            return False
-
-        def hasPosition(self) -> bool:
-            return False
-
-        def hasColor(self) -> bool:
-            return False
-
-        def hasBeam(self) -> bool:
-            return False
-
-        def hasEffects(self) -> bool:
-            return False
-
-        def hasTime(self) -> bool:
-            return False
-
-        def hasControl(self) -> bool:
-            return False
-
         def _getdirIndicator(self) -> str:
             ret_str = ""
-            if self.hasIntensity():
+            if self.hasIntensity:
                 ret_str += "I"
             else:
                 ret_str += "."
-            if self.hasPosition():
+            if self.hasPosition:
                 ret_str += "P"
             else:
                 ret_str += "."
-            if self.hasColor():
+            if self.hasColor:
                 ret_str += "C"
             else:
                 ret_str += "."
-            if self.hasBeam():
+            if self.hasBeam:
                 ret_str += "B"
             else:
                 ret_str += "."
-            if self.hasEffects():
+            if self.hasEffects:
                 ret_str += "E"
-            if self.hasTime():
+            if self.hasTime:
                 ret_str += "T"
-            if self.hasControl():
+            if self.hasControl:
                 ret_str += "L"
             return ret_str
 
+        def recalc(self):
+            self._dirIndicator.setText(self._getdirIndicator())
 
 if __name__ == "__main__":
     import sys
