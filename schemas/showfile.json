@@ -92,6 +92,74 @@
                 },
                 "required": ["num", "name"]
             }
+        },
+        "intensities": { "$ref": "#/StateList" },
+        "positions": { "$ref": "#/StateList" },
+        "colors": { "$ref": "#/StateList" },
+        "beams": { "$ref": "#/StateList" }
+    },
+    "StateList": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "num": { "type": "integer" },
+                "state": { "$ref": "#/LampState" }
+            }
+        }
+    },
+    "LampState": {
+        "type": "object",
+        "properties": {
+            "Intensity": {
+                "type": "object",
+                "properties": {
+                    "Intensity": { "type": "string" },
+                    "Intensity2": { "type": "string" },
+                    "Smoke": { "type": "string" },
+                    "Fan": { "type": "string" },
+                    "Strobe": { "type": "string" }
+                }
+            },
+            "Position": {
+                "type": "object",
+                "properties": {
+                    "Pan": { "type": "string" },
+                    "Tilt": { "type": "string" },
+                    "PosTime": { "type": "string" }
+                }
+            },
+            "Color": {
+                "type": "object",
+                "properties": {
+                    "Hue": { "type": "string" },
+                    "Saturation": { "type": "string" },
+                    "Red": { "type": "string" },
+                    "Green": { "type": "string" },
+                    "Blue": { "type": "string" },
+                    "Slot": { "type": "string" },
+                    "Slot2": { "type": "string" },
+                    "ColorFx": { "type": "string" }
+                }
+            },
+            "Beam": {
+                "type": "object",
+                "properties": {
+                    "Gobo": { "type": "string" },
+                    "GoboRot": { "type": "string" },
+                    "GoboShake": { "type": "string" },
+                    "Gobo2": { "type": "string" },
+                    "Gobo2Rot": { "type": "string" },
+                    "Gobo2Shake": { "type": "string" },
+                    "Focus": { "type": "string" },
+                    "Prism": { "type": "string" },
+                    "PrismRot": { "type": "string" },
+                    "PrismShake": { "type": "string" }
+                }
+            },
+            "Maintenance": {
+                "type": "object"
+            }
         }
     }
 }
