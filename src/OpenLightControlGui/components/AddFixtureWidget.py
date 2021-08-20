@@ -94,6 +94,8 @@ class AddFixtureWidget(QDialog):
 
 
 def get_fixtures(ofl: str) -> 'dict[str, dict[str, Fixture]]':
+    import os
+    import json
     mans: 'dict[str, Manufacturer]' = {key: Manufacturer(key, val) for key, val in json.load(
         open(ofl+"manufacturers.json")).items() if not "$" in key}
     fixturesByManu: 'dict[str, dict[str, Fixture]]' = {}
@@ -109,7 +111,6 @@ def get_fixtures(ofl: str) -> 'dict[str, dict[str, Fixture]]':
 if __name__ == "__main__":
     import os
     import sys
-    import json
     from PyQt5.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
