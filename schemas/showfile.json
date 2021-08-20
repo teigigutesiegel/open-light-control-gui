@@ -115,10 +115,10 @@
             "Intensity": {
                 "type": "object",
                 "properties": {
-                    "Intensity": { "type": "number" },
-                    "Intensity2": { "type": "number" },
-                    "Smoke": { "type": "number" },
-                    "Fan": { "type": "number" },
+                    "Intensity": { "type": "string" },
+                    "Intensity2": { "type": "string" },
+                    "Smoke": { "type": "string" },
+                    "Fan": { "type": "string" },
                     "Strobe": { "type": "string" }
                 }
             },
