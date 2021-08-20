@@ -96,7 +96,31 @@
         "intensities": { "$ref": "#/StateList" },
         "positions": { "$ref": "#/StateList" },
         "colors": { "$ref": "#/StateList" },
-        "beams": { "$ref": "#/StateList" }
+        "beams": { "$ref": "#/StateList" },
+        "states": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "num": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "group": {
+                        "type": "object",
+                        "properties": {
+                            "lamps": {
+                                "type": "array",
+                                "items": { "type": "integer" }
+                            },
+                            "groups": {
+                                "type": "array",
+                                "items": { "type": "integer" }
+                            }
+                        }
+                    },
+                    "state": { "$ref": "#/LampState" }
+                }
+            }
+        }
     },
     "StateList": {
         "type": "array",
