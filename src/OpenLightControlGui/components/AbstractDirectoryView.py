@@ -25,11 +25,12 @@ class AbstractDirectoryView(QMainWindow):
     _tablebut: QPushButton
     _lightbut: QPushButton
     _viewTileSize: Number = 75
-    _placeholder: int = 1000
+    _placeholder: int
 
     tile_selected = pyqtSignal(int)
 
-    def __init__(self, parent: Optional['QWidget'] = None) -> None:
+    def __init__(self, parent: Optional['QWidget'] = None, placeholder: int = 1000) -> None:
+        self._placeholder = placeholder
         super().__init__(parent=parent)
         self._items = {}
         self._guard_mode = False
@@ -90,12 +91,15 @@ class AbstractDirectoryView(QMainWindow):
     def _fill_grid(self):
         for i in range(self._placeholder):
             item = self.ViewTile(i+1)
-            item.clicked.connect(lambda x, num=item._num: self.tile_selected.emit(num))
+            item.selected.connect(lambda num: self.tile_selected.emit(num))
             self._mainGrid.addWidget(item)
             self._mainTable.setRowHidden(i, True)
 
     def getItem(self, pos: int) -> 'Optional[ViewTile]':
         return self._items.get(pos)
+    
+    def getItems(self) -> 'dict[int, ViewTile]':
+        return self._items
 
     def setItem(self, pos: int, item: "ViewTile") -> None:
         self._items[pos] = item
@@ -186,6 +190,8 @@ class AbstractDirectoryView(QMainWindow):
         _mainLay: QVBoxLayout
         _mainWidget: QWidget
 
+        selected = pyqtSignal(int)
+
         def __init__(self, num: int, title: Optional[str] = None, color: Optional[QColor] = None, fullColor: bool = False) -> None:
             super().__init__()
             self._num = num
@@ -229,6 +235,7 @@ class AbstractDirectoryView(QMainWindow):
                 self.clearColor()
             self.setFixedSize(AbstractDirectoryView._viewTileSize,
                               AbstractDirectoryView._viewTileSize)
+            self.clicked.connect(lambda: self.selected.emit(self._num))
 
         def setActive(self, active: bool) -> None:
             if active:
