@@ -6,8 +6,8 @@ if TYPE_CHECKING:
 
 class BeamDirectoryView(PalletteDirectoryView):
 
-    def __init__(self, parent: Optional['QWidget'] = None) -> None:
-        super().__init__("Beam", parent=parent)
+    def __init__(self, parent: Optional['QWidget'] = None, placeholder: int = 1000) -> None:
+        super().__init__("Beam", parent=parent, placeholder=placeholder)
 
 
 if __name__ == "__main__":
