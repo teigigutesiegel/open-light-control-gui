@@ -25,6 +25,7 @@ from .components.PositionDirectoryView import PositionDirectoryView
 from .components.ColorDirectoryView import ColorDirectoryView
 from .components.BeamDirectoryView import BeamDirectoryView
 from .components.GroupDirectoryView import GroupDirectoryView
+from .components.StateDirectoryView import StateDirectoryView
 # endregion
 
 __all__ = [
@@ -42,6 +43,7 @@ __all__ = [
     "ColorDirectoryView",
     "BeamDirectoryView",
     "GroupDirectoryView",
+    "StateDirectoryView",
     "ColorCircleDialog",
     "ColorCircle",
     "XY_Pad"
