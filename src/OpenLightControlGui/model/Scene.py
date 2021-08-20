@@ -6,24 +6,46 @@ from typing import Optional, Union, Iterable
 from OpenLightControlGui.model.LampState import LampState
 
 class Scene():
-    _states: 'list[State]'
-    _cuelists: 'list[Cuelist]'
+    _states: 'dict[str, State]'
+    _cuelists: 'dict[str, Cuelist]'
     
     def __init__(self, states: 'Optional[Union[State, Iterable[State]]]' = None, cuelists: 'Optional[Union[Cuelist, Iterable[Cuelist]]]' = None) -> None:
-        self._states = []
+        self._states = {}
         if states:
             if isinstance(states, Iterable):
-                for item in states:
-                    self._states.append(item)
+                for i, item in enumerate(states):
+                    self._states[str(i)] = item
             else:
-                self._states.append(states)
-        self._cuelists = []
+                self._states["0"] = states
+        self._cuelists = {}
         if cuelists:
             if isinstance(cuelists, Iterable):
-                for item in cuelists:
-                    self._cuelists.append(item)
+                for i, item in enumerate(cuelists):
+                    self._cuelists[str(i)] = item
             else:
-                self._cuelists.append(cuelists)
+                self._cuelists["0"] = cuelists
+    
+    def getState(self, name: str) -> 'Optional[State]':
+        return self._states.get(name, None)
+    
+    def getStates(self) -> 'dict[str, State]':
+        return self._states
+    
+    def getCuelist(self, name: str) -> 'Optional[Cuelist]':
+        return self._cuelists.get(name, None)
+    
+    def getCuelists(self) -> 'dict[str, Cuelist]':
+        return self._cuelists
+    
+    def addState(self, state: State, name: Optional[str] = None):
+        if not name:
+            name = len(self._states.keys())
+        self._states[name] = state
+    
+    def addCuelist(self, cuelist: Cuelist, name: Optional[str] = None):
+        if not name:
+            name = len(self._cuelists.keys())
+        self._cuelists[name] = cuelist
     
     def __str__(self) -> str:
         return f"Scene of {self._states} and {self._cuelists}"
@@ -40,7 +62,7 @@ class Scene():
         if fadertype != "Intensity":
             print("!WARNING!: fadertype not yet supported")
         
-        for state in self._states:
+        for state in self._states.values():
             for lamp in state.group.getLamps():
                 for address in lamp.address:
                     if not address.universe in universes.keys():
@@ -51,7 +73,11 @@ class Scene():
                         if state.state.Intensity.Intensity:
                             if not cap['Intensity'] == None:
                                 for address in lamp.address:
-                                    universes[address.universe][address.address + cap['Intensity']] = int(state.state.Intensity.Intensity.getBaseUnitEntity().number * faderval)
+                                    if state.state.Intensity.Intensity.unit == "%":
+                                        val = state.state.Intensity.Intensity.getBaseUnitEntity().number / 100 * 255
+                                    else:
+                                        val = state.state.Intensity.Intensity.getBaseUnitEntity().number
+                                    universes[address.universe][address.address + cap['Intensity']] = int(val * faderval)
                     if state.state.Position:
                         pass
                     if state.state.Color:
@@ -60,7 +86,11 @@ class Scene():
                                 if coltype in cap['Color'].keys():
                                     if getattr(state.state.Color, coltype):
                                         for address in lamp.address:
-                                            universes[address.universe][address.address + cap['Color'][coltype]] = getattr(state.state.Color, coltype).getBaseUnitEntity().number
+                                            if getattr(state.state.Color, coltype).unit == "col":
+                                                val = int(getattr(state.state.Color, coltype).getBaseUnitEntity().number * 255)
+                                            else:
+                                                val = int(getattr(state.state.Color, coltype).getBaseUnitEntity().number)
+                                            universes[address.universe][address.address + cap['Color'][coltype]] = val
                     if state.state.Beam:
                         pass
                     if state.state.Maintenance:
