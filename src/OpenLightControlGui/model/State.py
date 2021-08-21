@@ -41,7 +41,10 @@ class State():
     def getGroup(self) -> 'Group':
         return self._group
     
-    group: 'Group' = property(getGroup)
+    def setGroup(self, group: 'Group'):
+        self._group = group
+    
+    group: 'Group' = property(getGroup, setGroup)
     
     def addItem(self, item: Union[Lamp, Group]) -> None:
         if isinstance(item, Lamp):
@@ -82,3 +85,44 @@ class State():
     
     def __format__(self, format_spec: str) -> str:
         return self.__str__()
+
+    def getDmxState(self, universes: 'Optional[dict[int, list[int]]]', faderval: float = 1) -> 'dict[int, list[int]]':
+        if not universes:
+            universes = {}
+        for lamp in self.group.getLamps():
+            for address in lamp.address:
+                if not address.universe in universes.keys():
+                    universes[address.universe] = [0]*512
+            cap = lamp.capabilities
+            if self.state:
+                if self.state.Intensity:
+                    if self.state.Intensity.Intensity:
+                        if not cap['Intensity'] == None:
+                            for address in lamp.address:
+                                if self.state.Intensity.Intensity.unit == "%":
+                                    val = self.state.Intensity.Intensity.getBaseUnitEntity().number / 100 * 255
+                                else:
+                                    val = self.state.Intensity.Intensity.getBaseUnitEntity().number
+                                universes[address.universe][address.address + \
+                                    cap['Intensity']] = int(val * faderval)
+                if self.state.Position:
+                    pass
+                if self.state.Color:
+                    if not cap['Color'] == None:
+                        for coltype in ["Red", "Green", "Blue"]:
+                            if coltype in cap['Color'].keys():
+                                if getattr(self.state.Color, coltype):
+                                    for address in lamp.address:
+                                        if getattr(self.state.Color, coltype).unit == "col":
+                                            val = int(
+                                                getattr(self.state.Color, coltype).getBaseUnitEntity().number * 255)
+                                        else:
+                                            val = int(
+                                                getattr(self.state.Color, coltype).getBaseUnitEntity().number)
+                                        universes[address.universe][address.address + \
+                                            cap['Color'][coltype]] = val
+                if self.state.Beam:
+                    pass
+                if self.state.Maintenance:
+                    pass
+        return universes

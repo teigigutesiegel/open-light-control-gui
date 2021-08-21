@@ -42,6 +42,9 @@ class Scene():
             name = len(self._states.keys())
         self._states[name] = state
     
+    def removeState(self, name: str):
+        del self._states[name]
+    
     def addCuelist(self, cuelist: Cuelist, name: Optional[str] = None):
         if not name:
             name = len(self._cuelists.keys())
@@ -57,43 +60,12 @@ class Scene():
         return self.__str__()
     
     def getDmxState(self, faderval: float = 1, fadertype: str = "Intensity") -> 'dict[int, list[int]]':
-        universes = {}
+        universes: 'dict[int, list[int]]' = {}
 
         if fadertype != "Intensity":
             print("!WARNING!: fadertype not yet supported")
         
         for state in self._states.values():
-            for lamp in state.group.getLamps():
-                for address in lamp.address:
-                    if not address.universe in universes.keys():
-                        universes[address.universe] = [0]*512
-                cap = lamp.capabilities
-                if state.state:
-                    if state.state.Intensity:
-                        if state.state.Intensity.Intensity:
-                            if not cap['Intensity'] == None:
-                                for address in lamp.address:
-                                    if state.state.Intensity.Intensity.unit == "%":
-                                        val = state.state.Intensity.Intensity.getBaseUnitEntity().number / 100 * 255
-                                    else:
-                                        val = state.state.Intensity.Intensity.getBaseUnitEntity().number
-                                    universes[address.universe][address.address + cap['Intensity']] = int(val * faderval)
-                    if state.state.Position:
-                        pass
-                    if state.state.Color:
-                        if not cap['Color'] == None:
-                            for coltype in ["Red", "Green", "Blue"]:
-                                if coltype in cap['Color'].keys():
-                                    if getattr(state.state.Color, coltype):
-                                        for address in lamp.address:
-                                            if getattr(state.state.Color, coltype).unit == "col":
-                                                val = int(getattr(state.state.Color, coltype).getBaseUnitEntity().number * 255)
-                                            else:
-                                                val = int(getattr(state.state.Color, coltype).getBaseUnitEntity().number)
-                                            universes[address.universe][address.address + cap['Color'][coltype]] = val
-                    if state.state.Beam:
-                        pass
-                    if state.state.Maintenance:
-                        pass
+            state.getDmxState(universes, faderval)
         
         return universes

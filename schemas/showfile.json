@@ -78,51 +78,34 @@
                             "description": "number of group"
                         }
                     },
-                    "color": {
-                        "type": "array",
-                        "description": "RGB Tuple",
-                        "items": {
-                            "type": "integer",
-                            "minimum": 0,
-                            "maximum": 255
-                        },
-                        "minItems": 3,
-                        "maxItems": 3
-                    }
+                    "color": { "$ref": "#/ColorTuple" }
                 },
                 "required": ["num", "name"]
             }
         },
-        "intensities": { "$ref": "#/StateList" },
-        "positions": { "$ref": "#/StateList" },
-        "colors": { "$ref": "#/StateList" },
-        "beams": { "$ref": "#/StateList" },
-        "states": {
+        "intensities": { "$ref": "#/LampStateList" },
+        "positions": { "$ref": "#/LampStateList" },
+        "colors": { "$ref": "#/LampStateList" },
+        "beams": { "$ref": "#/LampStateList" },
+        "states": { "$ref": "#/StateList" },
+        "cuelists": {
             "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
-                    "num": { "type": "integer" },
-                    "name": { "type": "string" },
-                    "group": {
-                        "type": "object",
-                        "properties": {
-                            "lamps": {
-                                "type": "array",
-                                "items": { "type": "integer" }
-                            },
-                            "groups": {
-                                "type": "array",
-                                "items": { "type": "integer" }
-                            }
-                        }
+                    "num": "integer",
+                    "name": "string",
+                    "fade": "integer",
+                    "cues": {
+                        "type": "array",
+                        "items": { "$ref": "#/Cue" }
                     },
-                    "state": { "$ref": "#/LampState" }
+                    "color": { "$ref": "#/ColorTuple" }
                 }
             }
         }
     },
-    "StateList": {
+    "LampStateList": {
         "type": "array",
         "items": {
             "type": "object",
@@ -186,5 +169,52 @@
                 "type": "object"
             }
         }
+    },
+    "StateList": {
+        "type": "array",
+        "items": { "$ref": "#/State" }
+    },
+    "State": {
+        "type": "object",
+        "properties": {
+            "num": { "type": "integer" },
+            "name": { "type": "string" },
+            "group": {
+                "type": "object",
+                "properties": {
+                    "lamps": {
+                        "type": "array",
+                        "items": { "type": "integer" }
+                    },
+                    "groups": {
+                        "type": "array",
+                        "items": { "type": "integer" }
+                    }
+                }
+            },
+            "state": { "$ref": "#/LampState" },
+            "color": { "$ref": "#/ColorTuple" }
+        }
+    },
+    "Cue": {
+        "type": "object",
+        "properties": {
+            "num": "integer",
+            "name": "string",
+            "duration": "integer",
+            "fade": "integer",
+            "states": { "$ref": "#/StateList" }
+        }
+    },
+    "ColorTuple": {
+        "type": "array",
+        "description": "RGB Tuple",
+        "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+        },
+        "minItems": 3,
+        "maxItems": 3
     }
 }
