@@ -96,11 +96,26 @@
                     "num": "integer",
                     "name": "string",
                     "fade": "integer",
+                    "duration": "integer",
                     "cues": {
                         "type": "array",
                         "items": { "$ref": "#/Cue" }
                     },
                     "color": { "$ref": "#/ColorTuple" }
+                }
+            }
+        },
+        "commands": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "num": "integer",
+                    "name": "string",
+                    "action": "string",
+                    "action2": "string",
+                    "type": "string",
+                    "objectnum": "integer"
                 }
             }
         }
