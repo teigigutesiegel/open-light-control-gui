@@ -26,6 +26,8 @@ from .components.ColorDirectoryView import ColorDirectoryView
 from .components.BeamDirectoryView import BeamDirectoryView
 from .components.GroupDirectoryView import GroupDirectoryView
 from .components.StateDirectoryView import StateDirectoryView
+from .components.CuelistDirectoryView import CuelistDirectoryView
+from .components.CommandDirectoryView import CommandDirectoryView
 # endregion
 
 __all__ = [
@@ -44,6 +46,8 @@ __all__ = [
     "BeamDirectoryView",
     "GroupDirectoryView",
     "StateDirectoryView",
+    "CuelistDirectoryView",
+    "CommandDirectoryView",
     "ColorCircleDialog",
     "ColorCircle",
     "XY_Pad"
