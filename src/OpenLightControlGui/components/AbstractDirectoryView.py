@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QMainWindow, QTableWidget, QTableWidgetItem, QScrollArea, QStackedLayout, QToolBar, QPushButton, QHeaderView, QHBoxLayout, QVBoxLayout, QLabel, QSizePolicy
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtWidgets import QInputDialog, QWidget, QMainWindow, QTableWidget, QTableWidgetItem, QScrollArea, QStackedLayout, QToolBar, QPushButton, QHeaderView, QHBoxLayout, QVBoxLayout, QLabel, QSizePolicy
+from PyQt5.QtGui import QIcon, QColor, QMouseEvent
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 
 from OpenLightControlGui import FlowLayout
@@ -91,9 +91,20 @@ class AbstractDirectoryView(QMainWindow):
     def _fill_grid(self):
         for i in range(self._placeholder):
             item = self.ViewTile(i+1)
-            item.selected.connect(lambda num: self.tile_selected.emit(num))
+            item.selected.connect(self._handle_click)
+            item.right_click.connect(self._handle_right_click)
             self._mainGrid.addWidget(item)
             self._mainTable.setRowHidden(i, True)
+    
+    def _handle_click(self, num: int):
+        if self._guard_mode:
+            self.tile_selected.emit(num)
+    
+    def _handle_right_click(self, num: int):
+        if self._guard_mode and self.getItem(num)._active:
+            text, ok = QInputDialog.getText(self, 'change name', 'New Name:', text=self.getItem(num).title)
+            if ok:
+                self.getItem(num).title = text
 
     def getItem(self, pos: int) -> 'Optional[ViewTile]':
         return self._items.get(pos)
@@ -104,11 +115,15 @@ class AbstractDirectoryView(QMainWindow):
     def setItem(self, pos: int, item: "ViewTile") -> None:
         self._items[pos] = item
         self._add_table_item(item)
-        self._mainGrid.removeWidget(self._mainGrid.itemAt(pos-1).widget())
+        old_wid: QWidget = self._mainGrid.itemAt(pos-1).widget()
+        self._mainGrid.removeWidget(old_wid)
+        old_wid.deleteLater()
         self._mainGrid.insertWidget(pos-1, item)
+        item.selected.connect(self._handle_click)
+        item.right_click.connect(self._handle_right_click)
 
     def _add_table_item(self, item: "ViewTile") -> None:
-        wid = QTableWidgetItem(str(item._title))
+        wid = QTableWidgetItem(str(item.title))
         self._mainTable.setItem(item._num-1, 0, wid)
         if item.getColor():
             colwid = QTableWidgetItem()
@@ -191,6 +206,7 @@ class AbstractDirectoryView(QMainWindow):
         _mainWidget: QWidget
 
         selected = pyqtSignal(int)
+        right_click = pyqtSignal(int)
 
         def __init__(self, num: int, title: Optional[str] = None, color: Optional[QColor] = None, fullColor: bool = False) -> None:
             super().__init__()
@@ -206,7 +222,7 @@ class AbstractDirectoryView(QMainWindow):
             self._headerLay.addWidget(self._numLabel)
             self._mainVLay.addLayout(self._headerLay)
 
-            self._mainLabel = QLabel(self._title)
+            self._mainLabel = QLabel(self.title)
             pol = QSizePolicy()
             pol.setVerticalPolicy(QSizePolicy.Expanding)
             pol.setHorizontalPolicy(QSizePolicy.Expanding)
@@ -235,7 +251,7 @@ class AbstractDirectoryView(QMainWindow):
                 self.clearColor()
             self.setFixedSize(AbstractDirectoryView._viewTileSize,
                               AbstractDirectoryView._viewTileSize)
-            self.clicked.connect(lambda: self.selected.emit(self._num))
+            self.released.connect(lambda: self.selected.emit(self._num))
 
         def setActive(self, active: bool) -> None:
             if active:
@@ -297,6 +313,19 @@ class AbstractDirectoryView(QMainWindow):
             """)
             self.setActive(self._active)
 
+        def getTitle(self) -> str:
+            return self._title
+        
+        def setTitle(self, name: str) -> None:
+            self._title = name
+            self._mainLabel.setText(name)
+        
+        title: str = property(getTitle, setTitle)
+
+        def mousePressEvent(self, e: QMouseEvent) -> None:
+            if e.button() == Qt.MouseButton.RightButton:
+                self.right_click.emit(self._num)
+            return super().mousePressEvent(e)
 
 if __name__ == "__main__":
     import sys
