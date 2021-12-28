@@ -46,7 +46,7 @@ class Group():
         return lamp in self._lamps
     
     def copy(self) -> 'Group':
-        return Group(self._lamps)
+        return Group(self._lamps.copy())
     
     def __add__(self, o: 'Union[Lamp, Iterable[Lamp], Group]') -> 'Group':
         g = self.copy()
