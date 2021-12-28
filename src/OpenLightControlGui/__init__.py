@@ -3,7 +3,6 @@ from . import model
 
 # region custom Layouts
 from .components.FlowLayout import FlowLayout
-from .components.AspectLayout import AspectLayout
 # endregion
 
 # region custom widgets
@@ -33,7 +32,6 @@ from .components.CommandDirectoryView import CommandDirectoryView
 __all__ = [
     "model",
     "fixture_model",
-    "AspectLayout",
     "FlowLayout",
     "HiddenSpinBox",
     "CollapsibleBox",

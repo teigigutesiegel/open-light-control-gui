@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QToolBar, QMainWindow
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtCore import QSize, pyqtSignal
 
-from OpenLightControlGui import ColorCircle, AspectLayout, PalletteDirectoryView
+from OpenLightControlGui import ColorCircle, PalletteDirectoryView
 from OpenLightControlGui.model import LampState
 
 from typing import Optional
@@ -25,7 +25,7 @@ class ColorDirectoryView(PalletteDirectoryView):
         self._colorbut.setIconSize(QSize(30, 30))
         self._colorbut.setIcon(
             QIcon(os.path.join(basepath, "../../assets/icons/color-management.svg")))
-        self._colorbut.clicked.connect(self._openColorCircle)
+        self._colorbut.pressed.connect(self._openColorCircle)
         self._colorToolbar.addWidget(self._colorbut)
         self.insertToolBar(self._mainToolbar, self._colorToolbar)
 
@@ -59,11 +59,7 @@ class ColorDirectoryView(PalletteDirectoryView):
         self.color_selected.emit(num, self._colors.get(num))
 
     def _openColorCircle(self) -> None:
-        lay = AspectLayout(1)
-        col = ColorCircle()
-        lay.addWidget(col)
-        wid = QWidget()
-        wid.setLayout(lay)
+        wid = ColorCircle()
         win = QMainWindow(self)
         win.setCentralWidget(wid)
         win.setWindowTitle("Color Picker")
