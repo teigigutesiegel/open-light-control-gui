@@ -34,7 +34,8 @@ class StateDirectoryView(AbstractDirectoryView):
         return self._states.get(num)
 
     def _handle_TileClick(self, num: int) -> None:
-        self.state_selected.emit(num, self._states.get(num))
+        if not self._guard_mode:
+            self.state_selected.emit(num, self._states.get(num))
 
 if __name__ == "__main__":
     import sys
