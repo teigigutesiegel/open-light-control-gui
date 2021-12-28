@@ -77,7 +77,7 @@ class PalletteDirectoryView(AbstractDirectoryView):
             super().__init__(num, title, color, fullColor)
             self._num = num
             if title:
-                self._title = title
+                self.title = title
                 self._active = True
             self._fullColor = fullColor
 
