@@ -128,7 +128,7 @@ if __name__ == "__main__":
         else:
             print("Cancel!")
     
-    window.clicked.connect(clicked)
+    window.pressed.connect(clicked)
     window.show()
 
     sys.exit(app.exec_())

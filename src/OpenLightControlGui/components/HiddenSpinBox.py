@@ -18,7 +18,7 @@ class HiddenSpinBox(QWidget):
         
         self._blank = QPushButton()
         self._blank.setStyleSheet("QPushButton { border-radius: 0px; border: 1px solid black }")
-        self._blank.clicked.connect(lambda: self._stack.setCurrentIndex(1))
+        self._blank.pressed.connect(lambda: self._stack.setCurrentIndex(1))
         self._stack.addWidget(self._blank)
         self._spin = QSpinBox()
         self._spin.valueChanged.connect(lambda num: self.valueChanged.emit(num))
