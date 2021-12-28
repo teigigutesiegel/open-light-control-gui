@@ -74,12 +74,20 @@ class Cue():
         return self.__str__()
 
     def getDmxState(self, faderval: float = 1, fadertype: str = "Intensity") -> 'dict[int, list[int]]':
+        def combine_universes(base: 'dict[int, list[int]]', adding: 'dict[int, list[int]]'):
+            for num, universe in adding.items():
+                if not base.get(num):
+                    base[num] = universe
+                else:
+                    for i, channel in enumerate(universe):
+                        base[num][i] = max(base[num][i], channel)
+
         universes: 'dict[int, list[int]]' = {}
 
         if fadertype != "Intensity":
             print("!WARNING!: fadertype not yet supported")
 
         for state in self.states:
-            state.getDmxState(universes, faderval)
+            combine_universes(universes, state.getDmxState(faderval))
 
         return universes

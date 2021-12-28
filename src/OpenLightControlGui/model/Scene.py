@@ -47,8 +47,13 @@ class Scene():
     
     def addCuelist(self, cuelist: Cuelist, name: Optional[str] = None):
         if not name:
-            name = len(self._cuelists.keys())
+            name = f"Cuelist {len(self._cuelists.keys()) + 1}"
+        if not cuelist.name:
+            cuelist.name = name
         self._cuelists[name] = cuelist
+    
+    def removeCuelist(self, name: str):
+        del self._cuelists[name]
     
     def __str__(self) -> str:
         return f"Scene of {self._states} and {self._cuelists}"
@@ -60,12 +65,23 @@ class Scene():
         return self.__str__()
     
     def getDmxState(self, faderval: float = 1, fadertype: str = "Intensity") -> 'dict[int, list[int]]':
+        def combine_universes(base: 'dict[int, list[int]]', adding: 'dict[int, list[int]]'):
+            for num, universe in adding.items():
+                if not base.get(num):
+                    base[num] = universe
+                else:
+                    for i, channel in enumerate(universe):
+                        base[num][i] = max(base[num][i], channel)
+
         universes: 'dict[int, list[int]]' = {}
 
         if fadertype != "Intensity":
             print("!WARNING!: fadertype not yet supported")
         
         for state in self._states.values():
-            state.getDmxState(universes, faderval)
+            combine_universes(universes, state.getDmxState(faderval))
+
+        for cuelist in self._cuelists.values():
+            combine_universes(universes, cuelist.getDmxState())
         
         return universes

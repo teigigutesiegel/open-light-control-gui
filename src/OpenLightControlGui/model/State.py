@@ -86,9 +86,8 @@ class State():
     def __format__(self, format_spec: str) -> str:
         return self.__str__()
 
-    def getDmxState(self, universes: 'Optional[dict[int, list[int]]]', faderval: float = 1) -> 'dict[int, list[int]]':
-        if not universes:
-            universes = {}
+    def getDmxState(self, faderval: float = 1) -> 'dict[int, list[int]]':
+        universes = {}
         for lamp in self.group.getLamps():
             for address in lamp.address:
                 if not address.universe in universes.keys():
@@ -125,4 +124,5 @@ class State():
                     pass
                 if self.state.Maintenance:
                     pass
+        
         return universes
