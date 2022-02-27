@@ -1,3 +1,4 @@
+# pyright: reportGeneralTypeIssues=false, reportOptionalMemberAccess=false
 from OpenLightControlGui import PalletteDirectoryView
 from OpenLightControlGui.model import LampState
 
@@ -24,7 +25,7 @@ class IntensityDirectoryView(PalletteDirectoryView):
         self._intens[num] = state
         if not name:
             name = f"Inten {num}"
-        if color == None and state.Color and all(x != None for x in [state.Color.Red, state.Color.Green, state.Color.Blue]):
+        if color == None and state.Color and all(x is not None for x in [state.Color.Red, state.Color.Green, state.Color.Blue]):
             color = QColor.fromRgbF(state.Color.Red.number, state.Color.Green.number, state.Color.Blue.number, 1)
         item = self.ViewTile(num, name, color)
         if state.Intensity:

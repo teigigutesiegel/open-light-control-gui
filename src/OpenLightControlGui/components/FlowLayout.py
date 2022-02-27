@@ -4,6 +4,7 @@ PyQt5 port of the `layouts/flowlayout
 from Qt5.
 
 """
+# pyright: reportGeneralTypeIssues=false, reportUndefinedVariable=false, reportOptionalMemberAccess=false
 from PyQt5.QtCore import pyqtSignal, QPoint, QRect, QSize, Qt
 from PyQt5.QtWidgets import QLayout, QSizePolicy, QSpacerItem, QWidget
 

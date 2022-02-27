@@ -1,3 +1,4 @@
+# pyright: reportGeneralTypeIssues=false, reportOptionalMemberAccess=false
 from PyQt5.QtWidgets import QInputDialog, QWidget, QMainWindow, QTableWidget, QTableWidgetItem, QScrollArea, QStackedLayout, QToolBar, QPushButton, QHeaderView, QHBoxLayout, QVBoxLayout, QLabel, QSizePolicy
 from PyQt5.QtGui import QIcon, QColor, QMouseEvent
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
@@ -101,10 +102,12 @@ class AbstractDirectoryView(QMainWindow):
             self.tile_selected.emit(num)
     
     def _handle_right_click(self, num: int):
-        if self._guard_mode and self.getItem(num)._active:
-            text, ok = QInputDialog.getText(self, 'change name', 'New Name:', text=self.getItem(num).title)
-            if ok:
-                self.getItem(num).title = text
+        item = self.getItem(num)
+        if item is not None:
+            if self._guard_mode and item._active:
+                text, ok = QInputDialog.getText(self, 'change name', 'New Name:', text=item.title)
+                if ok:
+                    item.title = text
 
     def getItem(self, pos: int) -> 'Optional[ViewTile]':
         return self._items.get(pos)
@@ -115,7 +118,7 @@ class AbstractDirectoryView(QMainWindow):
     def setItem(self, pos: int, item: "ViewTile") -> None:
         self._items[pos] = item
         self._add_table_item(item)
-        old_wid: QWidget = self._mainGrid.itemAt(pos-1).widget()
+        old_wid: QWidget = self._mainGrid.itemAt(pos-1).widget() # typing: ignore
         self._mainGrid.removeWidget(old_wid)
         old_wid.deleteLater()
         self._mainGrid.insertWidget(pos-1, item)
@@ -271,10 +274,11 @@ class AbstractDirectoryView(QMainWindow):
         def setColor(self, color: QColor) -> None:
             self._color = color
             if self._fullColor:
-                if self.getColor():
+                col = self.getColor()
+                if col is not None:
                     self.setStyleSheet(
                         "QWidget { " + "background-color: rgb({0:d}, {1:d}, {2:d})".format(*color.getRgb()) + " }")
-                    if self.getColor().getHsvF()[2] >= 0.5:
+                    if col.getHsvF()[2] >= 0.5:
                         self.setStyleSheet(
                             self.styleSheet() + "QWidget { color:#000}")
                 else:

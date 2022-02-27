@@ -1,3 +1,4 @@
+# pyright: reportGeneralTypeIssues=false
 from PyQt5.QtWidgets import QWidget, QToolButton, QScrollArea, QSizePolicy, QFrame, QVBoxLayout
 from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, pyqtSlot, QAbstractAnimation
 

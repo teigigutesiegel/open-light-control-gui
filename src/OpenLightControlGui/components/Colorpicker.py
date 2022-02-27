@@ -1,3 +1,4 @@
+# pyright: reportGeneralTypeIssues=false
 from PyQt5.QtWidgets import QWidget, QApplication, QSizePolicy, QHBoxLayout, QSlider
 from PyQt5.QtCore import Qt, pyqtSignal, QPointF, QRect, QLineF
 from PyQt5.QtGui import QColor, QResizeEvent, QPaintEvent, QPainter, QConicalGradient, QRadialGradient, QMouseEvent

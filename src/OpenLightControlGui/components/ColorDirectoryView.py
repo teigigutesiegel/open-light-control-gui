@@ -1,3 +1,4 @@
+# pyright: reportGeneralTypeIssues=false, reportOptionalMemberAccess=false
 from PyQt5.QtWidgets import QWidget, QPushButton, QToolBar, QMainWindow
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtCore import QSize, pyqtSignal

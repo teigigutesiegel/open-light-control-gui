@@ -1,10 +1,11 @@
+
 from OpenLightControlGui.model import Cuelist, State
 from OpenLightControlGui import AbstractDirectoryView
 
-from typing import Optional, TYPE_CHECKING, Union, Literal
+from typing import Any, Optional, TYPE_CHECKING, Union
 
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QComboBox, QTableWidget, QTableWidgetItem
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QComboBox, QTableWidgetItem
 
 if TYPE_CHECKING:
     from PyQt5.QtWidgets import QWidget
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 
 class CommandDirectoryView(AbstractDirectoryView):
     _options = ["Go", "Pause", "Back", "Flash", "Stop", "Toggle", "Start", "End"]
-    _commands: 'dict[int, dict[str]]'
+    _commands: 'dict[int, dict[str, Any]]'
     _dropdowns: 'dict[int, tuple[QComboBox, QComboBox]]'
 
     command_selected = pyqtSignal(int, dict)

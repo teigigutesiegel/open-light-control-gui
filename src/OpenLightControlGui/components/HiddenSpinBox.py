@@ -1,7 +1,7 @@
+# pyright: reportGeneralTypeIssues=false
 from typing import Optional
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QWidget, QStackedLayout, QPushButton, QSpinBox
+from PyQt5.QtCore import QEvent, pyqtSignal
 
 
 class HiddenSpinBox(QWidget):

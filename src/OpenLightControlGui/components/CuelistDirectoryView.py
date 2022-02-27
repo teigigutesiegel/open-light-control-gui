@@ -1,3 +1,4 @@
+# pyright: reportGeneralTypeIssues=false
 from OpenLightControlGui.model import Cuelist
 from OpenLightControlGui import AbstractDirectoryView
 
@@ -31,16 +32,19 @@ class CuelistDirectoryView(AbstractDirectoryView):
         self._mainTable.setHorizontalHeaderItem(4, QTableWidgetItem("Duration"))
     
     def _add_table_item(self, item: "AbstractDirectoryView.ViewTile") -> None:
+        i = self.getCuelist(item._num)
         dropdown = QSpinBox()
         dropdown.setMinimum(-1)
         dropdown.setMaximum(10000)
-        dropdown.setValue(self.getCuelist(item._num).standardFade)
+        if i is not None:
+            dropdown.setValue(i.standardFade)
         dropdown.valueChanged.connect(
             lambda val, num=item._num: self.dofade(val, num))
         dropdown2 = QSpinBox()
         dropdown2.setMinimum(-1)
         dropdown2.setMaximum(10000)
-        dropdown2.setValue(self.getCuelist(item._num).standardDuration)
+        if i is not None:
+            dropdown2.setValue(i.standardDuration)
         dropdown2.valueChanged.connect(
             lambda val, num=item._num: self.doduration(val, num))
         self._mainTable.setCellWidget(item._num-1, 3, dropdown)
@@ -52,17 +56,19 @@ class CuelistDirectoryView(AbstractDirectoryView):
         if val < 0:
             val = None
         c = self.getCuelist(num)
-        c.standardFade = val or 0
-        for cue in c._cues:
-            cue.fade = val
+        if c is not None:
+            c.standardFade = val or 0
+            for cue in c._cues:
+                cue.fade = val
     
     def doduration(self, val, num):
         if val < 0:
             val = None
         c = self.getCuelist(num)
-        c.standardDuration = val or 0
-        for cue in c._cues:
-            cue.duration = val
+        if c is not None:
+            c.standardDuration = val or 0
+            for cue in c._cues:
+                cue.duration = val
     
     def addCuelist(self, num: int, cuelist: Cuelist, name: Optional[str] = None, color: Optional['QColor'] = None) -> None:
         self._cuelists[num] = cuelist

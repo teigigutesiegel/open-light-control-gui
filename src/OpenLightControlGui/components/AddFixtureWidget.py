@@ -1,6 +1,5 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+# pyright: reportGeneralTypeIssues=false
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QScrollArea, QDialogButtonBox, QWidget, QLabel, QSpacerItem, QSizePolicy, QPushButton
 
 from typing import Optional
 import re
