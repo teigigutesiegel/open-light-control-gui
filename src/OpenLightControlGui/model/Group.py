@@ -6,8 +6,11 @@ class Group():
     _lamps: 'list[Union[Lamp, Group]]'
     _name: str
 
-    def __init__(self, lamps: 'Optional[Union[Lamp, Iterable[Lamp], Group, Iterable[Group]]]' = None) -> None:
-        self._name = ""
+    def __init__(self, lamps: 'Optional[Union[Lamp, Group, Iterable[Union[Lamp, Group]]]]' = None, *, name: str = None) -> None:
+        if not name:
+            self._name = ""
+        else:
+            self._name = name
         self._lamps = []
         if lamps:
             if isinstance(lamps, Iterable):
@@ -17,12 +20,21 @@ class Group():
                 self.addItem(lamps)
     
     def addItem(self, item: 'Union[Lamp, Group]') -> None:
-        if not item in self._lamps:
-            self._lamps.append(item)
+        self._lamps.append(item)
+    
+    def addItems(self, items: 'Iterable[Union[Lamp, Group]]') -> None:
+        for item in items:
+            self.addItem(item)
     
     def removeItem(self, item: 'Union[Lamp, Group]') -> None:
         if item in self._lamps:
             self._lamps.pop(self._lamps.index(item))
+        elif isinstance(item, Group):
+            self.removeItems(item.lamps)
+    
+    def removeItems(self, items: 'Iterable[Union[Lamp, Group]]') -> None:
+        for item in items:
+            self.removeItem(item)
     
     def getLamps(self) -> 'list[Lamp]':
         ret_list = []
@@ -33,14 +45,15 @@ class Group():
                 ret_list.append(item)
         return ret_list
     
-    def _get_name(self) -> str:
+    lamps: 'list[Lamp]' = property(getLamps)
+    
+    @property
+    def name(self) -> str:
         return self._name
     
-    def _set_name(self, name: str) -> None:
+    @name.setter
+    def name(self, name: str) -> None:
         self._name = name
-    
-    lamps: 'list[Lamp]' = property(getLamps)
-    name: str = property(_get_name, _set_name)
     
     def includes(self, lamp: 'Union[Lamp, Group]') -> bool:
         return lamp in self._lamps
@@ -48,50 +61,43 @@ class Group():
     def copy(self) -> 'Group':
         return Group(self._lamps.copy())
     
-    def __add__(self, o: 'Union[Lamp, Iterable[Lamp], Group]') -> 'Group':
+    def __eq__(self, o: 'Group') -> bool:
+        if not isinstance(o, Group):
+            return NotImplemented
+        return self.lamps == o.lamps
+    
+    def __len__(self) -> int:
+        return len(self.lamps)
+    
+    def __add__(self, o: 'Union[Lamp, Group, Iterable[Union[Lamp, Group]]]') -> 'Group':
         g = self.copy()
-        if isinstance(o, (Group, Lamp)):
-            g += o
-        elif isinstance(o, Iterable):
-            for lamp in o:
-                g += lamp
+        g += o
         return g
     
-    def __iadd__(self, o: 'Union[Lamp, Iterable[Lamp], Group]') -> 'Group':
+    def __iadd__(self, o: 'Union[Lamp, Group, Iterable[Union[Lamp, Group]]]') -> 'Group':
         if isinstance(o, (Group, Lamp)):
             self.addItem(o)
         elif isinstance(o, Iterable):
-            for lamp in o:
-                self.addItem(lamp)
+            self.addItems(o)
         return self
     
-    def __sub__(self, o: 'Union[Lamp, Iterable[Lamp], Group]') -> 'Group':
+    def __sub__(self, o: 'Union[Lamp, Group, Iterable[Union[Lamp, Group]]]') -> 'Group':
         g = self.copy()
-        if isinstance(o, Group):
-            if o in g._lamps:
-                g -= o
-            else:
-                g -= o.lamps
-        elif isinstance(o, Iterable):
-            for lamp in o:
-                g -= lamp
-        elif isinstance(o, Lamp):
-            g -= o
+        g -= o
         return g
 
-    def __isub__(self, o: 'Union[Lamp, Iterable[Lamp], Group]') -> 'Group':
+    def __isub__(self, o: 'Union[Lamp, Group, Iterable[Union[Lamp, Group]]]') -> 'Group':
         if isinstance(o, (Lamp, Group)):
             self.removeItem(o)
         elif isinstance(o, Iterable):
-            for lamp in o:
-                self.removeItem(lamp)
+            self.removeItems(o)
         return self
+   
+    def __repr__(self) -> str:
+        return f"Group([{' ,'.join(repr(x) for x in self._lamps)}])"
 
     def __str__(self) -> str:
-        return f"Group {', '.join([str(x) for x in self.getLamps()][:3])}[{len(self.getLamps())}]"
+        if len(self) > 2:
+            return f"Group <{', '.join([str(x) for x in self.getLamps()][:2])}, ...> [{len(self)}]"
+        return f"Group <{', '.join([str(x) for x in self.getLamps()])}> [{len(self)}]"
     
-    def __repr__(self) -> str:
-        return self.__str__()
-    
-    def __format__(self, format_spec: str) -> str:
-        return self.__str__()

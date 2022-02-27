@@ -5,8 +5,8 @@ from typing import Optional
 import re
 
 from OpenLightControlGui import CollapsibleBox, HiddenSpinBox
-from OpenLightControlGui.fixture_model import Manufacturer, Fixture
-from OpenLightControlGui.model import Lamp
+from OpenLightControlGui.fixture_model import Fixture
+from OpenLightControlGui.utils.ofl import get_fixtures
 
 class AddFixtureWidget(QDialog):
     _mainLay: QVBoxLayout
@@ -90,22 +90,6 @@ class AddFixtureWidget(QDialog):
         wid = QWidget()
         wid.setLayout(self._fixLay)
         self._mainScroll.setWidget(wid)
-
-
-def get_fixtures(ofl: str) -> 'dict[str, dict[str, Fixture]]':
-    import os
-    import json
-    mans: 'dict[str, Manufacturer]' = {key: Manufacturer(key, val) for key, val in json.load(
-        open(ofl+"manufacturers.json")).items() if not "$" in key}
-    fixturesByManu: 'dict[str, dict[str, Fixture]]' = {}
-    for key, man in mans.items():
-        lis = os.listdir(ofl+key)
-        fixturesByManu[key] = {}
-        for fix in lis:
-            temp = Fixture(man, fix[:-5], json.load(open(ofl+key+"/"+fix)))
-            fixturesByManu[key][fix[:-5]] = temp
-    
-    return fixturesByManu
 
 if __name__ == "__main__":
     import os

@@ -60,7 +60,10 @@ class Cuelist():
     def _setName(self, name: str) -> None:
         self._name = name
     
-    def _getcurrCue(self) -> int:
+    name: 'Optional[str]' = property(_getName, _setName)
+    
+    @property
+    def currCue(self) -> int:
         return self._currCue
     
     def _getstandardFade(self) -> int:
@@ -69,11 +72,15 @@ class Cuelist():
     def _setstandardFade(self, ms: int) -> None:
         self._standardFade = ms
     
+    standardFade: int = property(_getstandardFade, _setstandardFade)
+
     def _getstandardDuration(self) -> int:
         return self._standardDuration
     
     def _setstandardDuration(self, ms: int) -> None:
         self._standardDuration = ms
+    
+    standardDuration: int = property(_getstandardDuration, _setstandardDuration)
     
     def _getfader(self) -> float:
         return self._faderval
@@ -82,10 +89,6 @@ class Cuelist():
         self._faderval = val
         self._dmxstate = self._cues[self.currCue].getDmxState(faderval=self._faderval)
 
-    name: 'Optional[str]' = property(_getName, _setName)
-    currCue: int = property(_getcurrCue)
-    standardFade: int = property(_getstandardFade, _setstandardFade)
-    standardDuration: int = property(_getstandardDuration, _setstandardDuration)
     faderval: float = property(_getfader, _setfader)
 
     def back(self):
@@ -184,13 +187,7 @@ class Cuelist():
     def getDmxState(self) -> 'dict[int, list[int]]':
         return self._dmxstate
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         if self.name:
             return f"Cuelist {self.name}"
         return f"Cuelist of {self._cues}"
-
-    def __repr__(self) -> str:
-        return self.__str__()
-
-    def __format__(self, format_spec: str) -> str:
-        return self.__str__()

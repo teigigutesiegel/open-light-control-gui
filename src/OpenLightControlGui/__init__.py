@@ -1,5 +1,6 @@
 from . import fixture_model
 from . import model
+from . import utils
 
 # region custom Layouts
 from .components.FlowLayout import FlowLayout
@@ -30,6 +31,7 @@ from .components.CommandDirectoryView import CommandDirectoryView
 # endregion
 
 __all__ = [
+    "utils",
     "model",
     "fixture_model",
     "FlowLayout",
