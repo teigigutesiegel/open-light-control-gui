@@ -4,6 +4,7 @@ from . import utils
 
 # region custom Layouts
 from .components.FlowLayout import FlowLayout
+from .components.CuelistView import CuelistView
 # endregion
 
 # region custom widgets
@@ -47,6 +48,7 @@ __all__ = [
     "GroupDirectoryView",
     "StateDirectoryView",
     "CuelistDirectoryView",
+    "CuelistView",
     "CommandDirectoryView",
     "ColorCircleDialog",
     "ColorCircle",
