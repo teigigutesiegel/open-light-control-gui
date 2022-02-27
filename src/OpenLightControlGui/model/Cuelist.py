@@ -1,5 +1,4 @@
 from typing import Dict, Iterable, Iterator, List, Optional
-from numbers import Number
 import time
 
 from OpenLightControlGui.model.Cue import Cue
