@@ -1,3 +1,4 @@
+# pyright: reportGeneralTypeIssues=false
 from OpenLightControlGui.model import *
 
 s = State()
