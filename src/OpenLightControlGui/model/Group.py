@@ -6,7 +6,7 @@ class Group():
     _lamps: 'list[Union[Lamp, Group]]'
     _name: str
 
-    def __init__(self, lamps: 'Optional[Union[Lamp, Iterable[Lamp], Group]]' = None) -> None:
+    def __init__(self, lamps: 'Optional[Union[Lamp, Iterable[Lamp], Group, Iterable[Group]]]' = None) -> None:
         self._name = ""
         self._lamps = []
         if lamps:

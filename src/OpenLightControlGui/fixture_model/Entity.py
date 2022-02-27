@@ -120,7 +120,7 @@ class Entity():
         return self.number == o.number and self.unit == o.unit and self.keyword == o.keyword
 
     @classmethod
-    def createFromEntityString(cl: 'Entity', entityString: str) -> 'Entity':
+    def createFromEntityString(cls, entityString: str) -> 'Entity':
         if entityString in KEYWORDS.keys():
             return Entity(KEYWORDS[entityString], "%", entityString)
 
