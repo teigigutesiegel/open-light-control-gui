@@ -1,13 +1,11 @@
-from OpenLightControlGui.fixture_model.CoarseChannel import CoarseChannel
-from OpenLightControlGui.model import State, Cuelist
+from OpenLightControlGui.model.State import State
+from OpenLightControlGui.model.Cuelist import Cuelist
 
-from typing import Optional, Union, Iterable
-
-from OpenLightControlGui.model.LampState import LampState
+from typing import Dict, List, Optional, Union, Iterable
 
 class Scene():
-    _states: 'dict[str, State]'
-    _cuelists: 'dict[str, Cuelist]'
+    _states: 'Dict[str, State]'
+    _cuelists: 'Dict[str, Cuelist]'
     
     def __init__(self, states: 'Optional[Union[State, Iterable[State]]]' = None, cuelists: 'Optional[Union[Cuelist, Iterable[Cuelist]]]' = None) -> None:
         self._states = {}
@@ -19,31 +17,34 @@ class Scene():
                 self._states["0"] = states
         self._cuelists = {}
         if cuelists:
-            if isinstance(cuelists, Iterable):
-                for i, item in enumerate(cuelists):
-                    self._cuelists[str(i)] = item
-            else:
+            if isinstance(cuelists, Cuelist):
                 self._cuelists["0"] = cuelists
+            else:
+                for i, item2 in enumerate(cuelists):
+                    self._cuelists[str(i)] = item2
     
     def getState(self, name: str) -> 'Optional[State]':
         return self._states.get(name, None)
     
-    def getStates(self) -> 'dict[str, State]':
+    def getStates(self) -> 'Dict[str, State]':
         return self._states
     
     def getCuelist(self, name: str) -> 'Optional[Cuelist]':
         return self._cuelists.get(name, None)
     
-    def getCuelists(self) -> 'dict[str, Cuelist]':
+    def getCuelists(self) -> 'Dict[str, Cuelist]':
         return self._cuelists
     
     def addState(self, state: State, name: Optional[str] = None):
         if not name:
-            name = len(self._states.keys())
+            name = str(len(self._states.keys()))
         self._states[name] = state
     
     def removeState(self, name: str):
-        del self._states[name]
+        try:
+            del self._states[name]
+        except KeyError:
+            pass
     
     def addCuelist(self, cuelist: Cuelist, name: Optional[str] = None):
         if not name:
@@ -53,13 +54,16 @@ class Scene():
         self._cuelists[name] = cuelist
     
     def removeCuelist(self, name: str):
-        del self._cuelists[name]
+        try:
+            del self._cuelists[name]
+        except KeyError:
+            pass
     
     def __repr__(self) -> str:
         return f"Scene of {self._states} and {self._cuelists}"
     
-    def getDmxState(self, faderval: float = 1, fadertype: str = "Intensity") -> 'dict[int, list[int]]':
-        def combine_universes(base: 'dict[int, list[int]]', adding: 'dict[int, list[int]]'):
+    def getDmxState(self, faderval: float = 1, fadertype: str = "Intensity") -> 'Dict[int, List[int]]':
+        def combine_universes(base: 'Dict[int, List[int]]', adding: 'Dict[int, List[int]]'):
             for num, universe in adding.items():
                 if not base.get(num):
                     base[num] = universe
@@ -67,7 +71,7 @@ class Scene():
                     for i, channel in enumerate(universe):
                         base[num][i] = max(base[num][i], channel)
 
-        universes: 'dict[int, list[int]]' = {}
+        universes: 'Dict[int, List[int]]' = {}
 
         if fadertype != "Intensity":
             print("!WARNING!: fadertype not yet supported")

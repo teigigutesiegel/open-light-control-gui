@@ -1,4 +1,3 @@
-# pyright: reportGeneralTypeIssues=false
 from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QToolBar, QGridLayout
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
@@ -49,7 +48,7 @@ class PalletteDirectoryView(AbstractDirectoryView):
                 lab.setStyleSheet("background-color: #00f; color: #fff")
             else:
                 lab.setStyleSheet(lab.styleSheet() + "color: #fff")
-            lab.setAlignment(Qt.AlignCenter)
+            lab.setAlignment(Qt.AlignCenter) # type: ignore
             lab.setFixedSize(15, 15)
             setattr(self, f"_{key}", lab)
             kindlay.addWidget(lab, i//4, i%4)
@@ -60,7 +59,7 @@ class PalletteDirectoryView(AbstractDirectoryView):
     
     def _add_table_item(self, item: "ViewTile") -> None:
         wid = QTableWidgetItem(item._getdirIndicator())
-        wid.setFlags(Qt.ItemIsEnabled)
+        wid.setFlags(Qt.ItemIsEnabled) # type: ignore
         self._mainTable.setItem(item._num-1, 3, wid)
         return super()._add_table_item(item)
 
@@ -84,7 +83,7 @@ class PalletteDirectoryView(AbstractDirectoryView):
 
             if title:
                 self._dirIndicator = QLabel(self._getdirIndicator())
-                self._dirIndicator.setAlignment(Qt.AlignRight)
+                self._dirIndicator.setAlignment(Qt.AlignRight) # type: ignore
                 self._headerLay.addWidget(self._dirIndicator)
                 font = self._dirIndicator.font()
                 font.setPointSize(7)

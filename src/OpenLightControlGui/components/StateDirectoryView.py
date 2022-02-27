@@ -1,7 +1,7 @@
 from OpenLightControlGui.model import State
 from OpenLightControlGui import AbstractDirectoryView
 
-from typing import Optional, TYPE_CHECKING
+from typing import Dict, Optional, TYPE_CHECKING
 
 from PyQt5.QtCore import pyqtSignal
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class StateDirectoryView(AbstractDirectoryView):
-    _states: 'dict[int, State]'
+    _states: 'Dict[int, State]'
 
     state_selected = pyqtSignal(int, State)
 

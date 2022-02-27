@@ -1,4 +1,3 @@
-# pyright: reportGeneralTypeIssues=false
 from typing import Optional
 from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtGui import QPainter, QPen, QMouseEvent, QPaintEvent
@@ -15,7 +14,7 @@ class XY_Pad(QWidget):
         super(XY_Pad, self).__init__(parent)
         self.on_wid = False
         self.p = self.palette()
-        self.p.setColor(self.backgroundRole(), Qt.white)
+        self.p.setColor(self.backgroundRole(), Qt.white) # type: ignore
         self.setAutoFillBackground(True)
         self.setPalette(self.p)
         self.setMinimumHeight(300)
@@ -34,20 +33,20 @@ class XY_Pad(QWidget):
         qp.end()
 
     def MouseDraw(self, qp: QPainter):
-        pen= QPen(Qt.red, 1, Qt.SolidLine)
+        pen= QPen(Qt.red, 1, Qt.SolidLine) # type: ignore
         qp.setPen(pen)
         qp.drawLine(self.px,0,self.px,self._height)
         qp.drawLine(0,self.py,self._width,self.py)
 
     def drawLines(self, qp: QPainter):
-        pen = QPen(Qt.lightGray, 2, Qt.SolidLine)
+        pen = QPen(Qt.lightGray, 2, Qt.SolidLine) # type: ignore
         qp.setPen(pen)
         size=self.size()
         qp.drawLine(0, int(size.height()/2), size.width(), int(size.height()/2))
         qp.drawLine(int(size.width()/2), 0, int(size.width()/2), size.height())
 
     def mousePressEvent(self, a0: QMouseEvent):
-        if a0.button() == Qt.LeftButton:
+        if a0.button() == Qt.LeftButton: # type: ignore
             self.lastPoint = a0.pos()
             self.on_wid = True
 
@@ -56,7 +55,7 @@ class XY_Pad(QWidget):
         self.py = a0.pos().y()
         self._height = self.size().height()
         self._width = self.size().width()
-        if (a0.buttons() & Qt.LeftButton) and self.on_wid:
+        if (a0.buttons() & Qt.LeftButton) and self.on_wid: # type: ignore
             if ((self.px >= 0) and (self.py >= 0)) and ((self.px <= self._width) and self.py <= self._height):
                 self.position_changed.emit(self.px/self._width,self.py/self._height)
         self.update()
@@ -66,7 +65,7 @@ class XY_Pad(QWidget):
         self.py = a0.pos().y()
         self._height = self.size().height()
         self._width = self.size().width()
-        if a0.button() == Qt.LeftButton and self.on_wid:
+        if a0.button() == Qt.LeftButton and self.on_wid: # type: ignore
             if ((self.px >= 0) and (self.py >= 0)) and ((self.px <= self._width) and self.py <= self._height):
                 self.position_changed.emit(self.px/self._width,self.py/self._height)
             self.on_wid = False

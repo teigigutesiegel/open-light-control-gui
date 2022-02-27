@@ -29,7 +29,7 @@ class TestBaseState(unittest.TestCase):
         stc = st.copy()
         self.assertEqual(st, stc)
         self.assertIsNot(st, stc)
-        for v1, v2 in zip(st.vals.values(), stc.vals.values()):
+        for v1, v2 in zip(st.vals.values(), stc.vals.values()): # type: ignore
             self.assertEqual(v1, v2)
             if isinstance(v1, Entity):
                 self.assertIsNot(v1, v2)

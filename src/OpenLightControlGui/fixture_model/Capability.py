@@ -1,4 +1,4 @@
-from typing import Iterable, TYPE_CHECKING, Optional, Literal, Any, Callable, Union
+from typing import TYPE_CHECKING, Optional, Literal, Any, Callable, Union
 from .Entity import Entity
 from .Range import Range
 
@@ -47,7 +47,7 @@ def appendInBrackets(string: str, *inBrackets: 'str') -> str:
 
 def getSlotCapabilityName(cap: 'Capability') -> str:
     '''returns the name for the cap, without the comment appended (if any).'''
-    if cap.wheelSlot == None:
+    if cap.wheelSlot is not None:
         return "Unkown wheel slot"
 
     return cap.wheelSlot[0].name if cap.slotNumber[0].number == cap.slotNumber[1].number else " ... ".join(slot.name for slot in cap.wheelSlot)

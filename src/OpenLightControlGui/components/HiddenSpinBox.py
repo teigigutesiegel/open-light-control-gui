@@ -1,4 +1,3 @@
-# pyright: reportGeneralTypeIssues=false
 from typing import Optional
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QPushButton, QSpinBox
 from PyQt5.QtCore import QEvent, pyqtSignal
@@ -18,11 +17,11 @@ class HiddenSpinBox(QWidget):
         
         self._blank = QPushButton()
         self._blank.setStyleSheet("QPushButton { border-radius: 0px; border: 1px solid black }")
-        self._blank.pressed.connect(lambda: self._stack.setCurrentIndex(1))
+        self._blank.pressed.connect(lambda: self._stack.setCurrentIndex(1)) # type: ignore
         self._stack.addWidget(self._blank)
         self._spin = QSpinBox()
-        self._spin.valueChanged.connect(lambda num: self.valueChanged.emit(num))
-        self._spin.valueChanged.connect(self._check_display)
+        self._spin.valueChanged.connect(lambda num: self.valueChanged.emit(num)) # type: ignore
+        self._spin.valueChanged.connect(self._check_display) # type: ignore
         self._spin.installEventFilter(self)
         self._stack.addWidget(self._spin)
 

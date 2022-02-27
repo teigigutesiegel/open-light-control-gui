@@ -1,4 +1,3 @@
-# pyright: reportGeneralTypeIssues=false, reportOptionalMemberAccess=false
 from PyQt5.QtWidgets import QWidget, QPushButton, QToolBar, QMainWindow
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtCore import QSize, pyqtSignal
@@ -6,14 +5,14 @@ from PyQt5.QtCore import QSize, pyqtSignal
 from OpenLightControlGui import ColorCircle, PalletteDirectoryView
 from OpenLightControlGui.model import LampState
 
-from typing import Optional
+from typing import Dict, Optional
 import os
 basepath = os.path.dirname(__file__)
 
 class ColorDirectoryView(PalletteDirectoryView):
     _colorToolbar: QToolBar
     _colorbut: QPushButton
-    _colors: 'dict[int, LampState]'
+    _colors: 'Dict[int, LampState]'
 
     color_selected = pyqtSignal(int, LampState)
 
@@ -26,7 +25,7 @@ class ColorDirectoryView(PalletteDirectoryView):
         self._colorbut.setIconSize(QSize(30, 30))
         self._colorbut.setIcon(
             QIcon(os.path.join(basepath, "../../assets/icons/color-management.svg")))
-        self._colorbut.pressed.connect(self._openColorCircle)
+        self._colorbut.pressed.connect(self._openColorCircle) # type: ignore
         self._colorToolbar.addWidget(self._colorbut)
         self.insertToolBar(self._mainToolbar, self._colorToolbar)
 

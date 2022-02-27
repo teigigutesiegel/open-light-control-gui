@@ -1,4 +1,4 @@
-# pyright: reportGeneralTypeIssues=false
+from typing import Tuple
 from PyQt5.QtWidgets import QWidget, QApplication, QSizePolicy, QHBoxLayout, QSlider
 from PyQt5.QtCore import Qt, pyqtSignal, QPointF, QRect, QLineF
 from PyQt5.QtGui import QColor, QResizeEvent, QPaintEvent, QPainter, QConicalGradient, QRadialGradient, QMouseEvent
@@ -11,8 +11,8 @@ class ColorCircle(QWidget):
         self.radius = 0
         self.selected_color = QColor(
             startupcolor[0], startupcolor[1], startupcolor[2], 1)
-        self.x = 0.5
-        self.y = 0.5
+        self.x_ = 0.5
+        self.y_ = 0.5
         self.h = self.selected_color.hueF()
         self.s = self.selected_color.saturationF()
         self.v = self.selected_color.valueF()
@@ -41,15 +41,15 @@ class ColorCircle(QWidget):
 
         val_grad = QRadialGradient(center, self.radius)
         val_grad.setColorAt(0.0, QColor.fromHsvF(0.0, 0.0, self.v, 1.0))
-        val_grad.setColorAt(1.0, Qt.transparent)
+        val_grad.setColorAt(1.0, Qt.transparent) # type: ignore
 
-        p.setPen(Qt.transparent)
+        p.setPen(Qt.transparent) # type: ignore
         p.setBrush(hsv_grad)
         p.drawEllipse(self.square)
         p.setBrush(val_grad)
         p.drawEllipse(self.square)
 
-        p.setPen(Qt.black)
+        p.setPen(Qt.black) # type: ignore
         p.setBrush(self.selected_color)
         line = QLineF.fromPolar(self.radius * self.s, 360 * self.h + 90)
         line.translate(self.rect().center())
@@ -60,7 +60,7 @@ class ColorCircle(QWidget):
         self.currentColorChanged.emit(self.selected_color)
         self.repaint()
 
-    def map_color(self, x: int, y: int) -> QColor:
+    def map_color(self, x: int, y: int) -> 'Tuple[float, float, float]':
         line = QLineF(QPointF(self.rect().center()), QPointF(x, y))
         s = min(1.0, line.length() / self.radius)
         h = (line.angle() - 90) / 360 % 1.
@@ -71,8 +71,8 @@ class ColorCircle(QWidget):
             self.h, self.s, self.v = 0, 0, 1
         else:
             self.h, self.s, self.v = self.map_color(ev.x(), ev.y())
-        self.x = ev.x() / self.width()
-        self.y = ev.y() / self.height()
+        self.x_ = ev.x() / self.width()
+        self.y_ = ev.y() / self.height()
         self.recalc()
 
     def mouseMoveEvent(self, ev: QMouseEvent) -> None:
@@ -137,7 +137,7 @@ class ColorCircleDialog(QWidget):
         fader.setMinimum(0)
         fader.setMaximum(511)
         fader.setValue(511)
-        fader.valueChanged.connect(lambda x: wid.setValue(x/511))
+        fader.valueChanged.connect(lambda x: wid.setValue(x/511)) # type: ignore
         mainlay.addWidget(fader)
 
         self.setLayout(mainlay)

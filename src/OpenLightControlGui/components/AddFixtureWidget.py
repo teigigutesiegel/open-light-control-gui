@@ -1,7 +1,6 @@
-# pyright: reportGeneralTypeIssues=false
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QScrollArea, QDialogButtonBox, QWidget, QLabel, QSpacerItem, QSizePolicy, QPushButton
 
-from typing import Optional
+from typing import Dict, Optional
 import re
 
 from OpenLightControlGui import CollapsibleBox, HiddenSpinBox
@@ -16,11 +15,11 @@ class AddFixtureWidget(QDialog):
     _fixLay: QVBoxLayout
     _bottomBar: QDialogButtonBox
     
-    _fixturedict: 'dict[str, dict[str, Fixture]]'
-    _fixture_count: 'dict[str, int]'
+    _fixturedict: 'Dict[str, Dict[str, Fixture]]'
+    _fixture_count: 'Dict[str, int]'
     _search: str
     
-    def __init__(self, fixturedict: 'dict[str, dict[str, Fixture]]', parent: Optional[QWidget] = None) -> None:
+    def __init__(self, fixturedict: 'Dict[str, Dict[str, Fixture]]', parent: Optional[QWidget] = None) -> None:
         super().__init__(parent=parent)
         self._fixturedict = fixturedict
         self._fixture_count = {}
@@ -33,7 +32,7 @@ class AddFixtureWidget(QDialog):
         self._mainLay.addLayout(self._topBar)
         self._topBar.addWidget(QLabel("Search fixture Name"))
         self._searchInput = QLineEdit()
-        self._searchInput.textChanged.connect(self._textchanged)
+        self._searchInput.textChanged.connect(self._textchanged) # type: ignore
         self._topBar.addWidget(self._searchInput)
 
         self._mainScroll = QScrollArea()
@@ -44,15 +43,15 @@ class AddFixtureWidget(QDialog):
         self._bottomBar = QDialogButtonBox(
             QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self._mainLay.addWidget(self._bottomBar)
-        self._bottomBar.accepted.connect(self.accept)
-        self._bottomBar.rejected.connect(self.reject)
+        self._bottomBar.accepted.connect(self.accept) # type: ignore
+        self._bottomBar.rejected.connect(self.reject) # type: ignore
 
         self.setLayout(self._mainLay)
     
-    def getFixtureCount(self) -> 'dict[str, int]':
+    def getFixtureCount(self) -> 'Dict[str, int]':
         return self._fixture_count
 
-    def setFixtureCount(self, fixture_count: 'dict[str, int]') -> None:
+    def setFixtureCount(self, fixture_count: 'Dict[str, int]') -> None:
         self._fixture_count = fixture_count
         self._fill_list()
     
@@ -111,7 +110,7 @@ if __name__ == "__main__":
         else:
             print("Cancel!")
     
-    window.pressed.connect(clicked)
+    window.pressed.connect(clicked) # type: ignore
     window.show()
 
     sys.exit(app.exec_())

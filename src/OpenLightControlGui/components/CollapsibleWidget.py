@@ -1,4 +1,3 @@
-# pyright: reportGeneralTypeIssues=false
 from PyQt5.QtWidgets import QWidget, QToolButton, QScrollArea, QSizePolicy, QFrame, QVBoxLayout
 from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, pyqtSlot, QAbstractAnimation
 
@@ -103,7 +102,7 @@ if __name__ == "__main__":
             label.setStyleSheet(
                 "background-color: {}; color : white;".format(color.name())
             )
-            label.setAlignment(Qt.AlignCenter)
+            label.setAlignment(Qt.AlignCenter) # type: ignore
             lay.addWidget(label)
 
         box.setContentLayout(lay)

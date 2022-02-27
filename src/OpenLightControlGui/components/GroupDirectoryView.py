@@ -1,7 +1,7 @@
 from OpenLightControlGui.model import Group
 from OpenLightControlGui import AbstractDirectoryView
 
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Dict
 
 from PyQt5.QtCore import pyqtSignal
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class GroupDirectoryView(AbstractDirectoryView):
-    _groups: 'dict[int, Group]'
+    _groups: 'Dict[int, Group]'
 
     group_selected = pyqtSignal(int, Group)
 

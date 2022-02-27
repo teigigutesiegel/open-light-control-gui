@@ -1,16 +1,15 @@
 from OpenLightControlGui.model.Effect import Effect
 from OpenLightControlGui.fixture_model import Entity
 
-from typing import Iterable, Literal, Optional, Union
+from typing import Dict, Iterable, Literal, Optional, Union, get_type_hints
 
 
 class LampState():
     class BaseState():
-        types: Literal
-        vals: 'dict[types, Union[Entity, str]]'
+        vals: 'Dict[str, Union[Entity, str, bool]]'
         additive: bool = False
 
-        def __init__(self, vals: 'Optional[dict[types, Union[Entity, str]]]' = None, *, additive: bool = False) -> None:
+        def __init__(self, vals: 'Optional[Dict[str, Union[Entity, str, bool]]]' = None, *, additive: bool = False) -> None:
             self.vals = {}
             if vals:
                 for k, v in vals.items():
@@ -22,7 +21,7 @@ class LampState():
                 self.additive = additive
 
         def copy(self) -> 'LampState.BaseState':
-            new = {}
+            new: 'Dict[str, Union[Entity, str, bool]]' = {}
             for k, v in self.vals.items():
                 if isinstance(v, Entity):
                     new[k] = v.copy()
@@ -30,13 +29,15 @@ class LampState():
                     new[k] = v
             return LampState.BaseState(new)
 
-        def __getitem__(self, typ: str) -> Optional[Union[Entity, str]]:
+        def __getitem__(self, typ: str) -> Optional[Union[Entity, str, bool]]:
             return self.vals.get(typ)
 
         def __setitem__(self, typ: str, val: Union[Entity, str]) -> None:
             self.vals[typ] = val
         
-        def __eq__(self, o: 'LampState.BaseState') -> bool:
+        def __eq__(self, o: object) -> bool:
+            if not isinstance(o, LampState.BaseState):
+                return NotImplemented
             return self.vals == o.vals
 
         def __add__(self, o: 'Union[LampState.BaseState, Iterable[LampState.BaseState]]') -> 'LampState.BaseState':
@@ -51,8 +52,8 @@ class LampState():
         def __iadd__(self, o: 'Union[LampState.BaseState, Iterable[LampState.BaseState]]') -> 'LampState.BaseState':
             if isinstance(o, LampState.BaseState):
                 for key, val in o.vals.items():
-                    if o.additive and self.vals[key]:
-                        self.vals[key] += o.vals[key]
+                    if o.additive and self.vals.get(key) is not None and isinstance(self.vals[key], Entity) and isinstance(o.vals[key], Entity):
+                        self.vals[key] += o.vals[key] # type: ignore
                     else:
                         self.vals[key] = val
             elif isinstance(o, Iterable):
@@ -75,41 +76,45 @@ class LampState():
         def copy(self) -> 'LampState.IntensityState':
             return LampState.IntensityState(self.vals.copy())
 
-        def _set_i(self, val: Entity) -> None:
-            self["Intensity"] = val
+        @property
+        def Intensity(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Intensity")
 
-        def _get_i(self) -> 'Optional[Entity]':
-            return self["Intensity"]
+        @Intensity.setter
+        def Intensity(self, val: Entity) -> None:
+            setattr(self, "Intensity", val)
 
-        def _set_i2(self, val: Entity) -> None:
-            self["Intensity2"] = val
+        @property
+        def Intensity2(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Intensity2")
 
-        def _get_i2(self) -> 'Optional[Entity]':
-            return self["Intensity2"]
+        @Intensity2.setter
+        def Intensity2(self, val: Entity) -> None:
+            setattr(self, "Intensity2", val)
 
-        def _set_smoke(self, val: Entity) -> None:
-            self["Smoke"] = val
+        @property
+        def Smoke(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Smoke")
 
-        def _get_smoke(self) -> 'Optional[Entity]':
-            return self["Smoke"]
+        @Smoke.setter
+        def Smoke(self, val: Entity) -> None:
+            setattr(self, "Smoke", val)
 
-        def _set_fan(self, val: Entity) -> None:
-            self["Fan"] = val
+        @property
+        def Fan(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Fan")
 
-        def _get_fan(self) -> 'Optional[Entity]':
-            return self["Fan"]
-        
-        def _set_strobe(self, val: Entity) -> None:
-            self["Strobe"] = val
-        
-        def _get_strobe(self) -> 'Optional[Entity]':
-            return self["Strobe"]
+        @Fan.setter
+        def Fan(self, val: Entity) -> None:
+            setattr(self, "Fan", val)
 
-        Intensity: 'Optional[Entity]' = property(_get_i, _set_i)
-        Intensity2: 'Optional[Entity]' = property(_get_i2, _set_i2)
-        Smoke: 'Optional[Entity]' = property(_get_smoke, _set_smoke)
-        Fan: 'Optional[Entity]' = property(_get_fan, _set_fan)
-        Strobe: 'Optional[Entity]' = property(_get_strobe, _set_strobe)
+        @property
+        def Strobe(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Strobe")
+
+        @Strobe.setter
+        def Strobe(self, val: Entity) -> None:
+            setattr(self, "Strobe", val)
 
     class PositionState(BaseState):
         types = Literal["Pan", "Tilt", "PosTime"]
@@ -117,27 +122,29 @@ class LampState():
         def copy(self) -> 'LampState.PositionState':
             return LampState.PositionState(self.vals.copy())
 
-        def _set_p(self, val: Entity) -> None:
-            self["Pan"] = val
+        @property
+        def Pan(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Pan")
 
-        def _get_p(self) -> 'Optional[Entity]':
-            return self["Pan"]
+        @Pan.setter
+        def Pan(self, val: Entity) -> None:
+            setattr(self, "Pan", val)
 
-        def _set_t(self, val: Entity) -> None:
-            self["Tilt"] = val
+        @property
+        def Tilt(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Tilt")
 
-        def _get_t(self) -> 'Optional[Entity]':
-            return self["Tilt"]
+        @Tilt.setter
+        def Tilt(self, val: Entity) -> None:
+            setattr(self, "Tilt", val)
 
-        def _set_pt(self, val: Entity) -> None:
-            self["PosTime"] = val
+        @property
+        def PosTime(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "PosTime")
 
-        def _get_pt(self) -> 'Optional[Entity]':
-            return self["PosTime"]
-
-        Pan: 'Optional[Entity]' = property(_get_p, _set_p)
-        Tilt: 'Optional[Entity]' = property(_get_t, _set_t)
-        PosTime: 'Optional[Entity]' = property(_get_pt, _set_pt)
+        @PosTime.setter
+        def PosTime(self, val: Entity) -> None:
+            setattr(self, "PosTime", val)
 
     class ColorState(BaseState):
         types = Literal["Hue", "Saturation", "Red",
@@ -146,62 +153,69 @@ class LampState():
         def copy(self) -> 'LampState.ColorState':
             return LampState.ColorState(self.vals.copy())
 
-        def _set_h(self, val: Entity) -> None:
-            self["Hue"] = val
+        @property
+        def Hue(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Hue")
 
-        def _get_h(self) -> 'Optional[Entity]':
-            return self["Hue"]
+        @Hue.setter
+        def Hue(self, val: Entity) -> None:
+            setattr(self, "Hue", val)
 
-        def _set_s(self, val: Entity) -> None:
-            self["Saturation"] = val
+        @property
+        def Saturation(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Saturation")
 
-        def _get_s(self) -> 'Optional[Entity]':
-            return self["Saturation"]
+        @Saturation.setter
+        def Saturation(self, val: Entity) -> None:
+            setattr(self, "Saturation", val)
 
-        def _set_r(self, val: Entity) -> None:
-            self["Red"] = val
+        @property
+        def Red(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Red")
 
-        def _get_r(self) -> 'Optional[Entity]':
-            return self["Red"]
+        @Red.setter
+        def Red(self, val: Entity) -> None:
+            setattr(self, "Red", val)
 
-        def _set_g(self, val: Entity) -> None:
-            self["Green"] = val
+        @property
+        def Green(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Green")
 
-        def _get_g(self) -> 'Optional[Entity]':
-            return self["Green"]
+        @Green.setter
+        def Green(self, val: Entity) -> None:
+            setattr(self, "Green", val)
 
-        def _set_b(self, val: Entity) -> None:
-            self["Blue"] = val
+        @property
+        def Blue(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Blue")
 
-        def _get_b(self) -> 'Optional[Entity]':
-            return self["Blue"]
+        @Blue.setter
+        def Blue(self, val: Entity) -> None:
+            setattr(self, "Blue", val)
 
-        def _set_slot(self, val: Entity) -> None:
-            self["Slot"] = val
+        @property
+        def Slot(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Slot")
 
-        def _get_slot(self) -> 'Optional[Entity]':
-            return self["Slot"]
+        @Slot.setter
+        def Slot(self, val: Entity) -> None:
+            setattr(self, "Slot", val)
 
-        def _set_slot2(self, val: Entity) -> None:
-            self["Slot2"] = val
+        @property
+        def Slot2(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Slot2")
 
-        def _get_slot2(self) -> 'Optional[Entity]':
-            return self["Slot2"]
+        @Slot2.setter
+        def Slot2(self, val: Entity) -> None:
+            setattr(self, "Slot2", val)
 
-        def _set_fx(self, val: Union[Entity, str]) -> None:
-            self["ColorFx"] = val
+        @property
+        def ColorFx(self) -> 'Optional[Union[Entity, str]]':
+            return getattr(self, "ColorFx")
 
-        def _get_fx(self) -> 'Optional[Union[Entity, str]]':
-            return self["ColorFx"]
-
-        Hue: 'Optional[Entity]' = property(_get_h, _set_h)
-        Saturation: 'Optional[Entity]' = property(_get_s, _set_s)
-        Red: 'Optional[Entity]' = property(_get_r, _set_r)
-        Green: 'Optional[Entity]' = property(_get_g, _set_g)
-        Blue: 'Optional[Entity]' = property(_get_b, _set_b)
-        Slot: 'Optional[Entity]' = property(_get_slot, _set_slot)
-        Slot2: 'Optional[Entity]' = property(_get_slot2, _set_slot2)
-        ColorFx: 'Optional[Entity]' = property(_get_fx, _set_fx)
+        @ColorFx.setter
+        def ColorFx(self, val: Union[Entity, str]) -> None:
+            setattr(self, "ColorFx", val)
 
     class BeamState(BaseState):
         types = Literal["Gobo", "GoboRot", "GoboShake", "Gobo2", "Gobo2Rot",
@@ -210,83 +224,92 @@ class LampState():
         def copy(self) -> 'LampState.BeamState':
             return LampState.BeamState(self.vals.copy())
 
-        def _set_g(self, val: Entity) -> None:
-            self["Gobo"] = val
+        @property
+        def Gobo(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Gobo")
 
-        def _get_g(self) -> 'Optional[Entity]':
-            return self["Gobo"]
+        @Gobo.setter
+        def Gobo(self, val: Entity) -> None:
+            setattr(self, "Gobo", val)
 
-        def _set_gr(self, val: Entity) -> None:
-            self["GoboRot"] = val
+        @property
+        def GoboRot(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "GoboRot")
 
-        def _get_gr(self) -> 'Optional[Entity]':
-            return self["GoboRot"]
+        @GoboRot.setter
+        def GoboRot(self, val: Entity) -> None:
+            setattr(self, "GoboRot", val)
 
-        def _set_gs(self, val: Entity) -> None:
-            self["GoboShake"] = val
+        @property
+        def GoboShake(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "GoboShake")
 
-        def _get_gs(self) -> 'Optional[Entity]':
-            return self["GoboShake"]
+        @GoboShake.setter
+        def GoboShake(self, val: Entity) -> None:
+            setattr(self, "GoboShake", val)
 
-        def _set_g2(self, val: Entity) -> None:
-            self["Gobo"] = val
+        @property
+        def Gobo2(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Gobo2")
 
-        def _get_g2(self) -> 'Optional[Entity]':
-            return self["Gobo"]
+        @Gobo2.setter
+        def Gobo2(self, val: Entity) -> None:
+            setattr(self, "Gobo2", val)
 
-        def _set_g2r(self, val: Entity) -> None:
-            self["GoboRot"] = val
+        @property
+        def Gobo2Rot(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Gobo2Ro2")
 
-        def _get_g2r(self) -> 'Optional[Entity]':
-            return self["GoboRot"]
+        @Gobo2Rot.setter
+        def Gobo2Rot(self, val: Entity) -> None:
+            setattr(self, "Gobo2Rot", val)
 
-        def _set_g2s(self, val: Entity) -> None:
-            self["GoboShake"] = val
+        @property
+        def Gobo2Shake(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Gobo2Shake")
 
-        def _get_g2s(self) -> 'Optional[Entity]':
-            return self["GoboShake"]
+        @Gobo2Shake.setter
+        def Gobo2Shake(self, val: Entity) -> None:
+            setattr(self, "Gobo2Shake", val)
 
-        def _set_f(self, val: Entity) -> None:
-            self["Focus"] = val
+        @property
+        def Focus(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Focus")
 
-        def _get_f(self) -> 'Optional[Entity]':
-            return self["Focus"]
+        @Focus.setter
+        def Focus(self, val: Entity) -> None:
+            setattr(self, "Focus", val)
 
-        def _set_p(self, val: Entity) -> None:
-            self["Prism"] = val
+        @property
+        def Prism(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "Prism")
 
-        def _get_p(self) -> 'Optional[Entity]':
-            return self["Prism"]
+        @Prism.setter
+        def Prism(self, val: Entity) -> None:
+            setattr(self, "Prism", val)
 
-        def _set_pr(self, val: Entity) -> None:
-            self["PrismRot"] = val
+        @property
+        def PrismRot(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "PrismRot")
 
-        def _get_pr(self) -> 'Optional[Entity]':
-            return self["PrismRot"]
+        @PrismRot.setter
+        def PrismRot(self, val: Entity) -> None:
+            setattr(self, "PrismRot", val)
 
-        def _set_ps(self, val: Entity) -> None:
-            self["PrismShake"] = val
+        @property
+        def PrismShake(self) -> 'Optional[Union[str, Entity]]':
+            return getattr(self, "PrismShake")
 
-        def _get_ps(self) -> 'Optional[Entity]':
-            return self["PrismShake"]
-
-        Gobo: 'Optional[Entity]' = property(_get_g, _set_g)
-        GoboRot: 'Optional[Entity]' = property(_get_gr, _set_gr)
-        GoboShake: 'Optional[Entity]' = property(_get_gs, _set_gs)
-        Gobo2: 'Optional[Entity]' = property(_get_g2, _set_g2)
-        Gobo2Rot: 'Optional[Entity]' = property(_get_g2r, _set_g2r)
-        Gobo2Shake: 'Optional[Entity]' = property(_get_g2s, _set_g2s)
-        Focus: 'Optional[Entity]' = property(_get_f, _set_f)
-        Prism: 'Optional[Entity]' = property(_get_p, _set_p)
-        PrismRot: 'Optional[Entity]' = property(_get_pr, _set_pr)
-        PrismShake: 'Optional[Entity]' = property(_get_ps, _set_ps)
+        @PrismShake.setter
+        def PrismShake(self, val: Entity) -> None:
+            setattr(self, "PrismShake", val)
 
     class MaintenanceState(BaseState):
         def copy(self) -> 'LampState.MaintenanceState':
             return LampState.MaintenanceState(self.vals.copy())
         
-        def set_val(self, typ: str) -> None:
-            self.vals = { typ: True }
+        def set_val(self, typ: str, val: bool = True) -> None:
+            self.vals[typ] = val
         
         def get_val(self) -> str:
             return list(self.vals.keys())[0]
@@ -295,22 +318,22 @@ class LampState():
     Position: Optional[PositionState]
     Color: Optional[ColorState]
     Beam: Optional[BeamState]
-    Effect: Optional[Iterable[Effect]]
+    Effect_: 'Optional[Iterable[Effect]]'
     Maintenance: Optional[MaintenanceState]
 
-    def __init__(self, Intensity: Optional[IntensityState] = None, Position: Optional[PositionState] = None, Color: Optional[ColorState] = None, Beam: Optional[BeamState] = None, Effect_: Optional[Iterable[Effect]] = None, Maintenance: Optional[MaintenanceState] = None) -> None:
+    def __init__(self, Intensity: Optional[IntensityState] = None, Position: Optional[PositionState] = None, Color: Optional[ColorState] = None, Beam: Optional[BeamState] = None, Effect_: 'Optional[Iterable[Effect]]' = None, Maintenance: Optional[MaintenanceState] = None) -> None:
         self.Intensity = Intensity
         self.Position = Position
         self.Color = Color
         self.Beam = Beam
-        self.Effect = []
+        self.Effect_ = []
         if Effect_:
             for i in Effect_:
-                self.Effect.append(i)
+                self.Effect_.append(i)
         self.Maintenance = Maintenance
 
     def copy(self) -> 'LampState':
-        return LampState(self.Intensity, self.Position, self.Color, self.Beam, self.Effect)
+        return LampState(self.Intensity, self.Position, self.Color, self.Beam, self.Effect_)
 
     def __add__(self, o: 'Union[LampState, Iterable[LampState]]') -> 'LampState':
         s = self.copy()
@@ -323,7 +346,7 @@ class LampState():
 
     def __iadd__(self, o: 'Union[LampState, Iterable[LampState]]') -> 'LampState':
         if isinstance(o, LampState):
-            for typ in ["Intensity", "Position", "Color", "Beam", "Effect"]:
+            for typ in ["Intensity", "Position", "Color", "Beam", "Effect_"]:
                 if getattr(self, typ) and getattr(o, typ):
                     setattr(self, typ, getattr(self, typ) + getattr(o, typ))
                 elif not getattr(self, typ) and getattr(o, typ):
@@ -331,6 +354,27 @@ class LampState():
         elif isinstance(o, Iterable):
             for state in o:
                 self += state
+        return self
+
+    def __sub__(self, o: 'Union[LampState, Iterable[LampState]]') -> 'LampState':
+        s = self.copy()
+        if isinstance(o, LampState):
+            s -= o
+        elif isinstance(o, Iterable):
+            for state in o:
+                s -= state
+        return s
+
+    def __isub__(self, o: 'Union[LampState, Iterable[LampState]]') -> 'LampState':
+        if isinstance(o, LampState):
+            for typ in ["Intensity", "Position", "Color", "Beam", "Effect_"]:
+                if getattr(self, typ) and getattr(o, typ):
+                    setattr(self, typ, getattr(self, typ) - getattr(o, typ))
+                elif not getattr(self, typ) and getattr(o, typ):
+                    setattr(self, typ, getattr(o, typ))
+        elif isinstance(o, Iterable):
+            for state in o:
+                self -= state
         return self
 
     def __repr__(self) -> str:
@@ -351,11 +395,11 @@ class LampState():
             ret_str += "B"
         else:
             ret_str += "."
-        if self.Effect:
+        if self.Effect_:
             ret_str += "E"
         if self.Maintenance:
             ret_str += "L"
         return f"LampState {ret_str}"
 
     def __bool__(self) -> bool:
-        return bool(self.Intensity) or bool(self.Position) or bool(self.Color) or bool(self.Beam) or bool(self.Effect)
+        return bool(self.Intensity) or bool(self.Position) or bool(self.Color) or bool(self.Beam) or bool(self.Effect_)

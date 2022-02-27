@@ -1,18 +1,17 @@
-# pyright: reportGeneralTypeIssues=false, reportOptionalMemberAccess=false
 from OpenLightControlGui import PalletteDirectoryView
 from OpenLightControlGui.model import LampState
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QColor
 
-from typing import Optional, TYPE_CHECKING
+from typing import Dict, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from PyQt5.QtWidgets import QWidget
 
 
 class IntensityDirectoryView(PalletteDirectoryView):
-    _intens: 'dict[int, LampState]'
+    _intens: 'Dict[int, LampState]'
 
     intens_selected = pyqtSignal(int, LampState)
 

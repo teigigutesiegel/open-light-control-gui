@@ -4,7 +4,6 @@ PyQt5 port of the `layouts/flowlayout
 from Qt5.
 
 """
-# pyright: reportGeneralTypeIssues=false, reportUndefinedVariable=false, reportOptionalMemberAccess=false
 from PyQt5.QtCore import pyqtSignal, QPoint, QRect, QSize, Qt
 from PyQt5.QtWidgets import QLayout, QSizePolicy, QSpacerItem, QWidget
 
@@ -86,10 +85,10 @@ class FlowLayout(QLayout):
         return size
     
     def clear(self) -> None:
-        for i in reversed(range(self.count())):
+        for i in reversed(range(self.count())): # type: ignore
             w: QWidget = self.itemAt(i).widget()
             self.removeWidget(w)
-            w.setParent(None)
+            w.setParent(None) # type: ignore
             w.deleteLater()
 
     def _do_layout(self, rect, test_only=False):

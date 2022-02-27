@@ -1,4 +1,5 @@
-from typing import Iterable, Optional, Union
+from typing import Dict, Iterable, List, Optional, Union
+from OpenLightControlGui.fixture_model.Entity import Entity
 
 from OpenLightControlGui.model.Lamp import Lamp
 from OpenLightControlGui.model.Group import Group
@@ -20,8 +21,8 @@ class State():
         self._state = LampState()
         if state:
             if isinstance(state, Iterable):
-                for item in state:
-                    self.addState(item)
+                for item2 in state:
+                    self.addState(item2)
             else:
                 self.addState(state)
 
@@ -37,15 +38,21 @@ class State():
     
     def removeGroup(self, group: Group) -> None:
         self._group -= group
-    
-    def getGroup(self) -> 'Group':
+
+    @property
+    def group(self) -> 'Group':
         return self._group
-    
+
+    @group.setter
+    def group(self, group: 'Group'):
+        self._group = group
+
+    def getGroup(self) -> 'Group':
+        return self.group
+
     def setGroup(self, group: 'Group'):
         self._group = group
-    
-    group: 'Group' = property(getGroup, setGroup)
-    
+
     def addItem(self, item: Union[Lamp, Group]) -> None:
         if isinstance(item, Lamp):
             self.addLamp(item)
@@ -69,19 +76,25 @@ class State():
     def removeState(self, state: LampState) -> None:
         self._state -= state
 
-    def getState(self) -> LampState:
+    @property
+    def state(self) -> LampState:
         return self._state
+
+    @state.setter
+    def state(self, state: LampState) -> None:
+        self._state = state
+
+    def getState(self) -> LampState:
+        return self.state
     
     def setState(self, state: LampState) -> None:
-        self._state = state
-    
-    state: LampState = property(getState, setState)
+        self.state = state
 
     def __repr__(self) -> str:
         return f"State of {self.group}"
 
-    def getDmxState(self, faderval: float = 1) -> 'dict[int, list[int]]':
-        universes = {}
+    def getDmxState(self, faderval: float = 1) -> 'Dict[int, List[int]]':
+        universes: 'Dict[int, List[int]]' = {}
         for lamp in self.group.getLamps():
             for address in lamp.address:
                 if not address.universe in universes.keys():
@@ -92,18 +105,19 @@ class State():
                     if self.state.Intensity.Intensity:
                         if not cap['Intensity'] == None:
                             for address in lamp.address:
-                                if self.state.Intensity.Intensity.unit == "%":
-                                    val = self.state.Intensity.Intensity.getBaseUnitEntity().number / 100 * 255
-                                else:
-                                    val = self.state.Intensity.Intensity.getBaseUnitEntity().number
-                                universes[address.universe][address.address + \
-                                    cap['Intensity']] = int(val * faderval)
+                                if isinstance(self.state.Intensity, Entity):
+                                    if self.state.Intensity.Intensity.unit == "%":
+                                        val = self.state.Intensity.Intensity.getBaseUnitEntity().number / 100 * 255
+                                    else:
+                                        val = self.state.Intensity.Intensity.getBaseUnitEntity().number
+                                    universes[address.universe][address.address + \
+                                        cap['Intensity']] = int(val * faderval)
                 if self.state.Position:
                     pass
                 if self.state.Color:
-                    if not cap['Color'] == None:
+                    if cap['Color'] is not None:
                         for coltype in ["Red", "Green", "Blue"]:
-                            if coltype in cap['Color'].keys():
+                            if isinstance(cap['Color'], dict) and coltype in cap['Color'].keys():
                                 if getattr(self.state.Color, coltype):
                                     for address in lamp.address:
                                         if getattr(self.state.Color, coltype).unit == "col":

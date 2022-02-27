@@ -1,12 +1,12 @@
-from typing import Iterable, Optional
+from typing import Dict, Iterable, Iterator, List, Optional
 from numbers import Number
 import time
 
 from OpenLightControlGui.model.Cue import Cue
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer, QObject, pyqtSignal
 
-class Cuelist():
-    _cues: 'list[Cue]'
+class Cuelist(QObject):
+    _cues: 'List[Cue]'
     _name: str
     _currCue: int = 0
     _standardFade: int = 0
@@ -17,14 +17,17 @@ class Cuelist():
     _fadetime: int = 0
     _cuetimer: QTimer
 
-    _lastdmxstate: 'dict[int, list[int]]'
-    _nextdmxstate: 'dict[int, list[int]]'
-    _dmxstate: 'dict[int, list[int]]'
+    currentCueChanged = pyqtSignal(int)
+
+    _lastdmxstate: 'Dict[int, List[int]]'
+    _nextdmxstate: 'Dict[int, List[int]]'
+    _dmxstate: 'Dict[int, List[int]]'
 
     _faderval: float = 1.0
     _paused: bool = False
 
     def __init__(self, cues: 'Iterable[Cue]', name: 'Optional[str]' = None) -> None:
+        super().__init__()
         self._cues = []
         self._lastdmxstate = {}
         self._nextdmxstate = {}
@@ -36,17 +39,17 @@ class Cuelist():
         self._fadetimer = QTimer()
         self._cuetimer = QTimer()
     
-    def addCue(self, cue: Cue, num: Optional[Number] = None) -> None:
-        if num == None:
+    def addCue(self, cue: Cue, num: Optional[int] = None) -> None:
+        if num is None:
             num = len(self._cues)
         self._cues.insert(num, cue)
         self._recalc()
     
-    def removeCue(self, num: Number) -> None:
+    def removeCue(self, num: int) -> None:
         del self._cues[num]
         self._recalc()
     
-    def getCue(self, num: Number) -> Optional[Cue]:
+    def getCue(self, num: int) -> Optional[Cue]:
         return self._cues[num] if num < len(self._cues) else None
 
     def _recalc(self):
@@ -54,42 +57,42 @@ class Cuelist():
             if not cue.name:
                 cue.num = i + 1
     
-    def _getName(self) -> 'Optional[str]':
+    @property
+    def name(self) -> 'Optional[str]':
         return getattr(self, "_name", None)
-    
-    def _setName(self, name: str) -> None:
+
+    @name.setter
+    def name(self, name: str) -> None:
         self._name = name
-    
-    name: 'Optional[str]' = property(_getName, _setName)
     
     @property
     def currCue(self) -> int:
         return self._currCue
     
-    def _getstandardFade(self) -> int:
+    @property
+    def standardFade(self) -> int:
         return self._standardFade
     
-    def _setstandardFade(self, ms: int) -> None:
+    @standardFade.setter
+    def standardFade(self, ms: int) -> None:
         self._standardFade = ms
-    
-    standardFade: int = property(_getstandardFade, _setstandardFade)
 
-    def _getstandardDuration(self) -> int:
+    @property
+    def standardDuration(self) -> int:
         return self._standardDuration
     
-    def _setstandardDuration(self, ms: int) -> None:
+    @standardDuration.setter
+    def standardDuration(self, ms: int) -> None:
         self._standardDuration = ms
     
-    standardDuration: int = property(_getstandardDuration, _setstandardDuration)
-    
-    def _getfader(self) -> float:
+    @property
+    def faderval(self) -> float:
         return self._faderval
 
-    def _setfader(self, val: float) -> None:
+    @faderval.setter
+    def faderval(self, val: float) -> None:
         self._faderval = val
         self._dmxstate = self._cues[self.currCue].getDmxState(faderval=self._faderval)
-
-    faderval: float = property(_getfader, _setfader)
 
     def back(self):
         try:
@@ -134,9 +137,9 @@ class Cuelist():
             duration = nextcue.duration
         if duration > 0:
             if back:
-                self._cuetimer.timeout.connect(self.back)
+                self._cuetimer.timeout.connect(self.back) # type: ignore
             else:
-                self._cuetimer.timeout.connect(self.go)
+                self._cuetimer.timeout.connect(self.go) # type: ignore
             self._cuetimer.start(fadetime +  duration)
         if fadetime == 0:
             self._nextdmxstate = {}
@@ -145,10 +148,11 @@ class Cuelist():
             self._fadetime = fadetime
             self._lastdmxstate = curcue.getDmxState(faderval=self._faderval)
             self._nextdmxstate = nextcue.getDmxState(faderval=self._faderval)
-            self._fadetimer.timeout.connect(self._fade)
+            self._fadetimer.timeout.connect(self._fade) # type: ignore
             self._fadestart = time.time_ns() // 1000000
             self._fadetimer.start(10)
         self._currCue = num
+        self.currentCueChanged.emit(self.currCue)
     
     def pause(self, pause: bool = True):
         if pause:
@@ -184,10 +188,25 @@ class Cuelist():
                 unis[uni][i] = fadeval(ti, l[i], n[i]) if l[i] or n[i] else 0
         self._dmxstate = unis
 
-    def getDmxState(self) -> 'dict[int, list[int]]':
+    def getDmxState(self) -> 'Dict[int, List[int]]':
         return self._dmxstate
+
+    def isRunning(self) -> bool:
+        return self.getDmxState() != {}
+
+    def isPaused(self) -> bool:
+        return self._paused
 
     def __repr__(self) -> str:
         if self.name:
             return f"Cuelist {self.name}"
         return f"Cuelist of {self._cues}"
+    
+    def __len__(self) -> int:
+        return len(self._cues)
+    
+    def __iter__(self) -> 'Iterator[Cue]':
+        return iter(self._cues)
+    
+    def __getitem__(self, key) -> 'Cue':
+        return self._cues[key]

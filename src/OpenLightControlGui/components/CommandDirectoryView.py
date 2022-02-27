@@ -2,7 +2,7 @@
 from OpenLightControlGui.model import Cuelist, State
 from OpenLightControlGui import AbstractDirectoryView
 
-from typing import Any, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, Optional, TYPE_CHECKING, Tuple, Union
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QComboBox, QTableWidgetItem
@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
 class CommandDirectoryView(AbstractDirectoryView):
     _options = ["Go", "Pause", "Back", "Flash", "Stop", "Toggle", "Start", "End"]
-    _commands: 'dict[int, dict[str, Any]]'
-    _dropdowns: 'dict[int, tuple[QComboBox, QComboBox]]'
+    _commands: 'Dict[int, Dict[str, Any]]'
+    _dropdowns: 'Dict[int, Tuple[QComboBox, QComboBox]]'
 
     command_selected = pyqtSignal(int, dict)
     command_right_click = pyqtSignal(int, dict)
@@ -37,13 +37,11 @@ class CommandDirectoryView(AbstractDirectoryView):
         dropdown.addItems(self._options)
         dropdown.setCurrentIndex(self._options.index(
             self._commands[item._num]["action"]))
-        dropdown.currentIndexChanged.connect(lambda actnum, num=item._num: self.doaction(actnum, num))
+        dropdown.currentIndexChanged.connect(lambda actnum, num=item._num: self.doaction(actnum, num)) # type: ignore
         dropdown2 = QComboBox()
         dropdown2.addItems(self._options)
-        dropdown2.setCurrentIndex(self._options.index(
-            self._commands[item._num]["action2"]))
-        dropdown2.currentIndexChanged.connect(
-            lambda actnum, num=item._num: self.doaction2(actnum, num))
+        dropdown2.setCurrentIndex(self._options.index(self._commands[item._num]["action2"]))
+        dropdown2.currentIndexChanged.connect(lambda actnum, num=item._num: self.doaction2(actnum, num)) # type: ignore
         self._mainTable.setCellWidget(item._num-1, 3, dropdown)
         self._mainTable.setCellWidget(item._num-1, 4, dropdown2)
         self._dropdowns[item._num] = (dropdown, dropdown2)
