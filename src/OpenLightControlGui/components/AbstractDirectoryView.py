@@ -1,15 +1,12 @@
-# pyright: reportGeneralTypeIssues=false, reportOptionalMemberAccess=false
-from PyQt5.QtWidgets import QInputDialog, QWidget, QMainWindow, QTableWidget, QTableWidgetItem, QScrollArea, QStackedLayout, QToolBar, QPushButton, QHeaderView, QHBoxLayout, QVBoxLayout, QLabel, QSizePolicy
+from PyQt5.QtWidgets import QInputDialog, QWidget, QMainWindow, QTableWidget, QTableWidgetItem, QScrollArea, QStackedLayout, QToolBar, QPushButton, QHeaderView, QHBoxLayout, QVBoxLayout, QLabel, QSizePolicy, QApplication
 from PyQt5.QtGui import QIcon, QColor, QMouseEvent
-from PyQt5.QtCore import QSize, Qt, pyqtSignal
+from PyQt5.QtCore import QSize, Qt, pyqtSignal, QTimer
 
 from OpenLightControlGui import FlowLayout
 
-from typing import Optional
-from numbers import Number
+from typing import Dict, Optional
 import os
 basepath = os.path.dirname(__file__)
-
 
 class AbstractDirectoryView(QMainWindow):
     _title: str = ""
@@ -19,13 +16,13 @@ class AbstractDirectoryView(QMainWindow):
     _mainTable: QTableWidget
     _scrollArea: QScrollArea
     _mainWid: QWidget
-    _items: 'dict[int, ViewTile]'
+    _items: 'Dict[int, ViewTile]'
     _guard_mode: bool
     _mainToolbar: QToolBar
     _guardbut: QPushButton
     _tablebut: QPushButton
     _lightbut: QPushButton
-    _viewTileSize: Number = 75
+    _viewTileSize: int = 75
     _placeholder: int
 
     tile_selected = pyqtSignal(int)
@@ -72,17 +69,17 @@ class AbstractDirectoryView(QMainWindow):
 
         self._mainToolbar = QToolBar()
         self._guardbut = QPushButton("Guard")
-        self._guardbut.clicked.connect(self._toggle_guard)
+        self._guardbut.clicked.connect(self._toggle_guard) # type: ignore
         self._tablebut = QPushButton()
         self._tablebut.setIconSize(QSize(30, 30))
         self._tablebut.setIcon(
             QIcon(os.path.join(basepath, "../../assets/icons/table.svg")))
-        self._tablebut.clicked.connect(self._toggle_table)
+        self._tablebut.clicked.connect(self._toggle_table) # type: ignore
         self._lightbut = QPushButton()
         self._lightbut.setIconSize(QSize(30, 30))
         self._lightbut.setIcon(
             QIcon(os.path.join(basepath, "../../assets/icons/lighttable.svg")))
-        self._lightbut.clicked.connect(self._toggle_full_color)
+        self._lightbut.clicked.connect(self._toggle_full_color) # type: ignore
         self._mainToolbar.addWidget(self._guardbut)
         self._mainToolbar.addWidget(self._tablebut)
         self._mainToolbar.addWidget(self._lightbut)
@@ -112,7 +109,7 @@ class AbstractDirectoryView(QMainWindow):
     def getItem(self, pos: int) -> 'Optional[ViewTile]':
         return self._items.get(pos)
     
-    def getItems(self) -> 'dict[int, ViewTile]':
+    def getItems(self) -> 'Dict[int, ViewTile]':
         return self._items
 
     def setItem(self, pos: int, item: "ViewTile") -> None:
@@ -128,10 +125,11 @@ class AbstractDirectoryView(QMainWindow):
     def _add_table_item(self, item: "ViewTile") -> None:
         wid = QTableWidgetItem(str(item.title))
         self._mainTable.setItem(item._num-1, 0, wid)
-        if item.getColor():
+        col = item.getColor()
+        if col is not None:
             colwid = QTableWidgetItem()
-            colwid.setBackground(item.getColor())
-            colwid.setFlags(Qt.ItemIsEnabled)
+            colwid.setBackground(col)
+            colwid.setFlags(Qt.ItemIsEnabled) # type: ignore
             self._mainTable.setItem(item._num-1, 1, colwid)
         self._mainTable.setRowHidden(item._num-1, False)
         self._resize_table()
@@ -154,7 +152,7 @@ class AbstractDirectoryView(QMainWindow):
         self._remove_table_item(pos)
         del self._items[pos]
 
-    def setItems(self, dic: 'dict[int, object]') -> None:
+    def setItems(self, dic: 'Dict[int, ViewTile]') -> None:
         for pos, item in dic.items():
             self.setItem(pos, item)
 
@@ -199,7 +197,7 @@ class AbstractDirectoryView(QMainWindow):
         _title: str = ""
         _num: int
         _active: bool = False
-        _color: QColor
+        _color: Optional[QColor] = None
         _fullColor: bool = False
         _mainVLay: QVBoxLayout
         _headerLay: QHBoxLayout
@@ -207,8 +205,10 @@ class AbstractDirectoryView(QMainWindow):
         _mainLabel: QLabel
         _mainLay: QVBoxLayout
         _mainWidget: QWidget
+        _last_click: str = ""
 
         selected = pyqtSignal(int)
+        double_click = pyqtSignal(int)
         right_click = pyqtSignal(int)
 
         def __init__(self, num: int, title: Optional[str] = None, color: Optional[QColor] = None, fullColor: bool = False) -> None:
@@ -230,7 +230,7 @@ class AbstractDirectoryView(QMainWindow):
             pol.setVerticalPolicy(QSizePolicy.Expanding)
             pol.setHorizontalPolicy(QSizePolicy.Expanding)
             self._mainLabel.setSizePolicy(pol)
-            self._mainLabel.setAlignment(Qt.AlignTop)
+            self._mainLabel.setAlignment(Qt.AlignTop) # type: ignore
             self._mainLabel.setWordWrap(True)
 
             font = self._numLabel.font()
@@ -254,7 +254,7 @@ class AbstractDirectoryView(QMainWindow):
                 self.clearColor()
             self.setFixedSize(AbstractDirectoryView._viewTileSize,
                               AbstractDirectoryView._viewTileSize)
-            self.released.connect(lambda: self.selected.emit(self._num))
+            # self.released.connect(lambda: self.selected.emit(self._num))
 
         def setActive(self, active: bool) -> None:
             if active:
@@ -317,23 +317,50 @@ class AbstractDirectoryView(QMainWindow):
             """)
             self.setActive(self._active)
 
-        def getTitle(self) -> str:
+        @property
+        def title(self) -> str:
             return self._title
         
-        def setTitle(self, name: str) -> None:
+        @title.setter
+        def title(self, name: str) -> None:
             self._title = name
             self._mainLabel.setText(name)
-        
-        title: str = property(getTitle, setTitle)
+
+        def getTitle(self) -> str:
+            return self.title
+
+        def setTitle(self, name: str) -> None:
+            self.title = name
 
         def mousePressEvent(self, e: QMouseEvent) -> None:
             if e.button() == Qt.MouseButton.RightButton:
+                self._last_click = ""
                 self.right_click.emit(self._num)
-            return super().mousePressEvent(e)
+            elif e.button() == Qt.MouseButton.LeftButton:
+                if self._last_click == "":
+                    self._last_click = "Left"
+            else:
+                return super().mousePressEvent(e)
+        
+        def mouseReleaseEvent(self, e: QMouseEvent) -> None:
+            if self._last_click == "Double":
+                self._last_click = ""
+                self.double_click.emit(self._num)
+            else:
+                QTimer.singleShot(QApplication.doubleClickInterval(), self._single_click)
+            return super().mouseReleaseEvent(e)
+
+        def mouseDoubleClickEvent(self, e: QMouseEvent) -> None:
+            self._last_click = "Double"
+            return super().mouseDoubleClickEvent(e)
+
+        def _single_click(self):
+            if self._last_click == "Left":
+                self._last_click = ""
+                self.selected.emit(self._num)
 
 if __name__ == "__main__":
     import sys
-    from PyQt5.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
 
