@@ -32,11 +32,8 @@ class Mode():
     def __str__(self) -> str:
         return f"Mode <{self.name}>"
 
-    def __format__(self, format_spec: str) -> str:
-        return self.__str__()
-
     def __repr__(self) -> str:
-        return self.__str__()
+        return f"<...{self.fixture.name}[{self.name}]...>"
 
     def _get_jsonObject(self) -> 'dict[str, Any]':
         return self._jsonObject

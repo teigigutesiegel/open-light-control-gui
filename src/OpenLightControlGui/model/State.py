@@ -77,14 +77,8 @@ class State():
     
     state: LampState = property(getState, setState)
 
-    def __str__(self) -> str:
-        return f"State of {self.group}"
-    
     def __repr__(self) -> str:
-        return self.__str__()
-    
-    def __format__(self, format_spec: str) -> str:
-        return self.__str__()
+        return f"State of {self.group}"
 
     def getDmxState(self, faderval: float = 1) -> 'dict[int, list[int]]':
         universes = {}

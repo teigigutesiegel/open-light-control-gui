@@ -55,14 +55,8 @@ class Scene():
     def removeCuelist(self, name: str):
         del self._cuelists[name]
     
-    def __str__(self) -> str:
-        return f"Scene of {self._states} and {self._cuelists}"
-
     def __repr__(self) -> str:
-        return self.__str__()
-
-    def __format__(self, format_spec: str) -> str:
-        return self.__str__()
+        return f"Scene of {self._states} and {self._cuelists}"
     
     def getDmxState(self, faderval: float = 1, fadertype: str = "Intensity") -> 'dict[int, list[int]]':
         def combine_universes(base: 'dict[int, list[int]]', adding: 'dict[int, list[int]]'):

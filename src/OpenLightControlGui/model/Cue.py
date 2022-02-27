@@ -29,6 +29,8 @@ class Cue():
     
     def getStates(self) -> 'list[State]':
         return self._states
+    
+    states: 'list[State]' = property(getStates)
 
     def _getName(self) -> 'Optional[str]':
         return self._name
@@ -36,42 +38,38 @@ class Cue():
     def _setName(self, name: str) -> None:
         self._name = name
     
+    name: 'Optional[str]' = property(_getName, _setName)
+    
     def _getNum(self) -> 'Optional[num]':
         return self._num
     
     def _setNum(self, num: int) -> None:
         self._num = num
+
+    num: 'Optional[int]' = property(_getNum, _setNum)
     
     def _getDuration(self) -> int:
         return self._duration
     
     def _setDuration(self, ms: int) -> None:
         self._duration = ms
-    
+
+    duration: int = property(_getDuration, _setDuration)
+        
     def _getFadeIn(self) -> int:
         return self._fadein
     
     def _setFadeIn(self, ms: int) -> None:
         self._fadein = ms
     
-    states: 'list[State]' = property(getStates)
-    name: 'Optional[str]' = property(_getName, _setName)
-    num: 'Optional[int]' = property(_getNum, _setNum)
-    duration: int = property(_getDuration, _setDuration)
     fade: 'Optional[int]' = property(_getFadeIn, _setFadeIn)
-    
-    def __str__(self) -> str:
+        
+    def __repr__(self) -> str:
         if self.name:
             return self.name
         if self.num:
             return f"Cue {self.num}"
         return f"Cue of {self.states}"
-    
-    def __repr__(self) -> str:
-        return self.__str__()
-    
-    def __format__(self, format_spec: str) -> str:
-        return self.__str__()
 
     def getDmxState(self, faderval: float = 1, fadertype: str = "Intensity") -> 'dict[int, list[int]]':
         def combine_universes(base: 'dict[int, list[int]]', adding: 'dict[int, list[int]]'):

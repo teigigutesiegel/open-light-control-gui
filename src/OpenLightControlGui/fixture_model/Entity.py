@@ -1,6 +1,6 @@
 import re
 from numbers import Number
-from typing import Optional, Any
+from typing import Union, Optional, Any
 
 KEYWORDS = {
     'fast reverse': -100,
@@ -75,8 +75,13 @@ class Entity():
         self._keyword = keyword
         self._cache = {}
 
-    def _get_number(self) -> Number:
+    @property
+    def number(self) -> Number:
         return self._number
+    
+    @number.setter
+    def number(self, number: Number) -> None:
+        self._number = number
 
     def _get_unit(self) -> str:
         return self._unit
@@ -84,9 +89,11 @@ class Entity():
     def _get_keyword(self) -> Optional[str]:
         return self._keyword or None
 
-    number: Number = property(_get_number)
     unit: str = property(_get_unit)
     keyword: Optional[str] = property(_get_keyword)
+
+    def copy(self) -> 'Entity':
+        return Entity(self.number, self.unit, self.keyword)
 
     def getBaseUnitEntity(self) -> 'Entity':
         '''returns <Entity> An entity of the same value, but scaled to the base unit. Returns the entity itself if it is already in the base unit.'''
@@ -98,6 +105,24 @@ class Entity():
             else:
                 self._cache["baseUnitEntity"] = self
         return self._cache["baseUnitEntity"]
+
+    def __add__(self, o: 'Union[Entity, Number]') -> 'Entity':
+        if not isinstance(o, (Entity, Number)):
+            return NotImplemented
+        new = self.copy()
+        new += o
+        return new
+    
+    def __iadd__(self, o: 'Union[Entity, Number]') -> 'Entity':
+        if isinstance(o, Entity):
+            if self.unit != o.unit:
+                raise TypeError(f"Can't add Entity of type {self.unit} and {o.unit}")
+            self.number += o.number
+        elif isinstance(o, Number):
+            self.number += o
+        else:
+            return NotImplemented
+        return self
 
     def __lt__(self, x: 'Entity') -> bool:
         return self.number < x.number
