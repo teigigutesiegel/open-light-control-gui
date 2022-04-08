@@ -29,6 +29,7 @@ from .components.GroupDirectoryView import GroupDirectoryView
 from .components.StateDirectoryView import StateDirectoryView
 from .components.CuelistDirectoryView import CuelistDirectoryView
 from .components.CommandDirectoryView import CommandDirectoryView
+from .components.OutputView import OutputView
 # endregion
 
 __all__ = [
@@ -50,6 +51,7 @@ __all__ = [
     "CuelistDirectoryView",
     "CuelistView",
     "CommandDirectoryView",
+    "OutputView",
     "ColorCircleDialog",
     "ColorCircle",
     "XY_Pad"
