@@ -1,9 +1,8 @@
-from typing import Any, Dict, List, Literal, Optional, Iterable, Type, Union
+from typing import Any, Dict, List, Literal, Optional, Iterable,  Union
 from numbers import Number
-from OpenLightControlGui.fixture_model.Capability import Capability
 
 from OpenLightControlGui.model.Address import Address
-from OpenLightControlGui.fixture_model import Fixture, Mode, AbstractChannel, CoarseChannel
+from OpenLightControlGui.fixture_model import Fixture, Mode, AbstractChannel, CoarseChannel, FineChannel
 
 _cap_types = Literal["Intensity", "Position", "Color", "Beam", "Maintenance"]
 
@@ -73,9 +72,9 @@ class Lamp():
         return len(self.mode.channels)
 
     @property
-    def capabilities(self) -> 'Dict[_cap_types, Optional[Union[int, Dict[str, int]]]]':
+    def capabilities(self) -> 'Dict[_cap_types, Optional[Union[int, Dict[Union[str, int], Union[int, Dict[int, int]]]]]]':
         if not "capabilities" in self._cache.keys():
-            capabilities: 'Dict[_cap_types, Optional[Union[int, Dict[str, int]]]]' = {
+            capabilities: 'Dict[_cap_types, Optional[Union[int, Dict[Union[str, int], Union[int, Dict[int, int]]]]]]' = {
                 "Intensity": None,
                 "Position": None,
                 "Color": None,
@@ -95,6 +94,21 @@ class Lamp():
                                 if not capabilities['Color']:
                                     capabilities['Color'] = {}
                                 capabilities['Color'][str(cap.color)] = channelnum # type: ignore
+                elif isinstance(channel, FineChannel):
+                    if channel.coarseChannel.type == "Intensity":
+                        if isinstance(capabilities["Intensity"], int):
+                            capabilities["Intensity"] = { 1: capabilities["Intensity"], channel.resolution: channelnum }
+                        elif isinstance(capabilities["Intensity"], dict):
+                            capabilities["Intensity"][channel.resolution] = channelnum
+                    if "color" in channel.coarseChannel.type.lower():
+                        cap = channel.coarseChannel.capabilities[0]
+                        if cap.type == "ColorIntensity":
+                            if not capabilities['Color']:
+                                capabilities['Color'] = {}
+                            if isinstance(capabilities['Color'][str(cap.color)], int): # type: ignore
+                                capabilities['Color'][str(cap.color)] = { 1: capabilities['Color'][str(cap.color)], channel.resolution: channelnum } # type: ignore
+                            elif isinstance(capabilities['Color'][str(cap.color)], dict):  # type: ignore
+                                capabilities['Color'][str(cap.color)][channel.resolution] = channelnum  # type: ignore
             
             self._cache["capabilities"] = capabilities
 

@@ -103,30 +103,54 @@ class State():
             if self.state:
                 if self.state.Intensity:
                     if self.state.Intensity.Intensity:
-                        if cap['Intensity'] is not None:
-                            for address in lamp.address:
-                                if isinstance(self.state.Intensity.Intensity, Entity):
+                        if isinstance(self.state.Intensity.Intensity, Entity):
+                            if isinstance(cap['Intensity'], int):
+                                for address in lamp.address:
                                     if self.state.Intensity.Intensity.unit == "%":
                                         val = self.state.Intensity.Intensity.getBaseUnitEntity().number / 100 * 255
                                     else:
                                         val = self.state.Intensity.Intensity.getBaseUnitEntity().number
                                     universes[address.universe][address.address + cap['Intensity']] = int(val * faderval) # type: ignore
+                            elif isinstance(cap['Intensity'], dict):
+                                val = self.state.Intensity.Intensity.getBaseUnitEntity().number
+                                ls = sorted(cap['Intensity'].items(), reverse=True) # type: ignore
+                                for address in lamp.address:
+                                    if self.state.Intensity.Intensity.unit == "%":
+                                        val = val / 100
+                                        val = int(val * faderval * (2**(8*ls[0][0])-1)).to_bytes(ls[0][0], "big") # type: ignore
+                                        for res, num in cap['Intensity'].items():
+                                            universes[address.universe][address.address + num] = val[res-1] # type: ignore
+                                    else:
+                                        val = int(val * faderval * (2**(8*ls[0][0])-1)).to_bytes(ls[0][0], "big") # type: ignore
+                                        for res, num in cap['Intensity'].items():
+                                            universes[address.universe][address.address + num] = val[res-1] # type: ignore
+
                 if self.state.Position:
                     pass
                 if self.state.Color:
-                    if cap['Color'] is not None:
+                    if isinstance(cap['Color'], dict):
                         for coltype in ["Red", "Green", "Blue"]:
-                            if isinstance(cap['Color'], dict) and coltype in cap['Color'].keys():
-                                if getattr(self.state.Color, coltype):
+                            if coltype in cap['Color'].keys() and isinstance(getattr(self.state.Color, coltype), Entity):
+                                if isinstance(cap['Color'][coltype], int):
                                     for address in lamp.address:
                                         if getattr(self.state.Color, coltype).unit == "col":
-                                            val = int(
-                                                getattr(self.state.Color, coltype).getBaseUnitEntity().number * 255)
+                                            val = int(getattr(self.state.Color, coltype).getBaseUnitEntity().number * 255)
                                         else:
-                                            val = int(
-                                                getattr(self.state.Color, coltype).getBaseUnitEntity().number)
-                                        universes[address.universe][address.address + \
-                                            cap['Color'][coltype]] = val
+                                            val = int(getattr(self.state.Color, coltype).getBaseUnitEntity().number)
+                                        universes[address.universe][address.address + cap['Color'][coltype]] = val  # type: ignore
+                                elif isinstance(cap['Color'][coltype], dict):
+                                    val = getattr(self.state.Color, coltype).getBaseUnitEntity().number
+                                    ls = sorted(cap['Color'][coltype].items(), reverse=True) # type: ignore
+                                    for address in lamp.address:
+                                        if getattr(self.state.Color, coltype).unit == "col":
+                                            val = int(val * (2**(8*ls[0][0])-1)).to_bytes(ls[0][0], "big") # type: ignore
+                                            for res, num in cap['Color'][coltype].items(): # type: ignore
+                                                universes[address.universe][address.address + num] = val[res-1] # type: ignore
+                                        else:
+                                            val = int(val).to_bytes(ls[0][0], "big") # type: ignore
+                                            for res, num in cap['Color'][coltype].items(): # type: ignore
+                                                universes[address.universe][address.address + num] = val[res-1] # type: ignore
+
                 if self.state.Beam:
                     pass
                 if self.state.Maintenance:
