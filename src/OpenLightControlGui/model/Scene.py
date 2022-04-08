@@ -69,7 +69,7 @@ class Scene():
                     base[num] = universe
                 else:
                     for i, channel in enumerate(universe):
-                        base[num][i] = max(base[num][i], channel)
+                        base[num][i] = channel #max(base[num][i], 
 
         universes: 'Dict[int, List[int]]' = {}
 
