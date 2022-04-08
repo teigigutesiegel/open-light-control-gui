@@ -103,15 +103,14 @@ class State():
             if self.state:
                 if self.state.Intensity:
                     if self.state.Intensity.Intensity:
-                        if not cap['Intensity'] == None:
+                        if cap['Intensity'] is not None:
                             for address in lamp.address:
-                                if isinstance(self.state.Intensity, Entity):
+                                if isinstance(self.state.Intensity.Intensity, Entity):
                                     if self.state.Intensity.Intensity.unit == "%":
                                         val = self.state.Intensity.Intensity.getBaseUnitEntity().number / 100 * 255
                                     else:
                                         val = self.state.Intensity.Intensity.getBaseUnitEntity().number
-                                    universes[address.universe][address.address + \
-                                        cap['Intensity']] = int(val * faderval)
+                                    universes[address.universe][address.address + cap['Intensity']] = int(val * faderval) # type: ignore
                 if self.state.Position:
                     pass
                 if self.state.Color:
