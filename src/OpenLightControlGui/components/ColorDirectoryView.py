@@ -44,7 +44,7 @@ class ColorDirectoryView(PalletteDirectoryView):
             item.hasColor = True
         if state.Beam:
             item.hasBeam = True
-        if state.Effect:
+        if state.Effect_:
             item.hasEffects = True
         if state.Maintenance:
             item.hasControl = True
