@@ -4,6 +4,7 @@ from OpenLightControlGui.model.Lamp import Lamp
 
 class Group():
     _lamps: 'List[Union[Lamp, Group]]'
+    _removed_lamps: 'List[Lamp]'
     _name: str
 
     def __init__(self, lamps: 'Optional[Union[Lamp, Group, Iterable[Union[Lamp, Group]]]]' = None, *, name: str = None) -> None:
@@ -12,6 +13,7 @@ class Group():
         else:
             self._name = name
         self._lamps = []
+        self._removed_lamps = []
         if lamps:
             if isinstance(lamps, Iterable):
                 for lamp in lamps:
@@ -31,6 +33,9 @@ class Group():
             self._lamps.pop(self._lamps.index(item))
         elif isinstance(item, Group):
             self.removeItems(item.lamps)
+        elif isinstance(item, Lamp):
+            if not item in self._removed_lamps:
+                self._removed_lamps.append(item)
 
     def removeItems(self, items: 'Iterable[Union[Lamp, Group]]') -> None:
         for item in items:
@@ -44,7 +49,7 @@ class Group():
                 ret_list.extend(item.lamps)
             else:
                 ret_list.append(item)
-        return ret_list
+        return [item for item in ret_list if not item in self._removed_lamps]
 
     def getLamps(self) -> 'List[Lamp]':
         return self.lamps
@@ -70,6 +75,9 @@ class Group():
 
     def __len__(self) -> int:
         return len(self.lamps)
+    
+    def __bool__(self) -> bool:
+        return len(self) > 0
 
     def __add__(self, o: 'Union[Lamp, Group, Iterable[Union[Lamp, Group]]]') -> 'Group':
         g = self.copy()
