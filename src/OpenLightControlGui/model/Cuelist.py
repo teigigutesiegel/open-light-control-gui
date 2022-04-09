@@ -18,9 +18,9 @@ class Cuelist(QObject):
 
     currentCueChanged = pyqtSignal(int)
 
-    _lastdmxstate: 'Dict[int, List[Optional[int]]]'
-    _nextdmxstate: 'Dict[int, List[Optional[int]]]'
-    _dmxstate: 'Dict[int, List[Optional[int]]]'
+    _lastdmxstate: 'Dict[int, List[int]]'
+    _nextdmxstate: 'Dict[int, List[int]]'
+    _dmxstate: 'Dict[int, List[int]]'
 
     _faderval: float = 1.0
     _paused: bool = False
@@ -167,10 +167,6 @@ class Cuelist(QObject):
 
     def _fade(self):
         def fadeval(ti: float, f: int = 0, t: int = 0) -> int:
-            if f is None:
-                f = 0
-            if t is None:
-                t = 0
             return int(f * (1-ti) + t * ti)
         
         x = (time.time_ns() // 1000000 - self._fadestart)
@@ -184,14 +180,14 @@ class Cuelist(QObject):
         unis = {}
         for uni in uni_num:
             if not unis.get(uni):
-                unis[uni] = [None]*512
-            l = self._lastdmxstate.get(uni, [None]*512)
-            n = self._nextdmxstate.get(uni, [None]*512)
+                unis[uni] = [0]*512
+            l = self._lastdmxstate.get(uni, [0]*512)
+            n = self._nextdmxstate.get(uni, [0]*512)
             for i in range(len(l)):
                 unis[uni][i] = fadeval(ti, l[i], n[i]) if l[i] or n[i] else 0
         self._dmxstate = unis
 
-    def getDmxState(self) -> 'Dict[int, List[Optional[int]]]':
+    def getDmxState(self) -> 'Dict[int, List[int]]':
         return self._dmxstate
 
     def isRunning(self) -> bool:

@@ -16,10 +16,7 @@ class State():
                 for item in groups:
                     self.addItem(item)
             else:
-                if isinstance(groups, Group):
-                    self.setGroup(groups)
-                else:
-                    self.addItem(groups)
+                self.addItem(groups)
         
         self._state = LampState()
         if state:
@@ -96,12 +93,12 @@ class State():
     def __repr__(self) -> str:
         return f"State of {self.group}"
 
-    def getDmxState(self, faderval: float = 1) -> 'Dict[int, List[Optional[int]]]':
-        universes: 'Dict[int, List[Optional[int]]]' = {}
+    def getDmxState(self, faderval: float = 1) -> 'Dict[int, List[int]]':
+        universes: 'Dict[int, List[int]]' = {}
         for lamp in self.group.getLamps():
             for address in lamp.address:
                 if not address.universe in universes.keys():
-                    universes[address.universe] = [None]*512
+                    universes[address.universe] = [0]*512
             cap = lamp.capabilities
             if self.state:
                 if self.state.Intensity:
