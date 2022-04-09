@@ -62,16 +62,17 @@ class Scene():
     def __repr__(self) -> str:
         return f"Scene of {self._states} and {self._cuelists}"
     
-    def getDmxState(self, faderval: float = 1, fadertype: str = "Intensity") -> 'Dict[int, List[int]]':
-        def combine_universes(base: 'Dict[int, List[int]]', adding: 'Dict[int, List[int]]'):
+    def getDmxState(self, faderval: float = 1, fadertype: str = "Intensity") -> 'Dict[int, List[Optional[int]]]':
+        def combine_universes(base: 'Dict[int, List[Optional[int]]]', adding: 'Dict[int, List[Optional[int]]]'):
             for num, universe in adding.items():
                 if not base.get(num):
                     base[num] = universe
                 else:
                     for i, channel in enumerate(universe):
-                        base[num][i] = channel #max(base[num][i], 
+                        if channel is not None:
+                            base[num][i] = max(base[num][i], channel) if base[num][i] is not None else channel # type: ignore
 
-        universes: 'Dict[int, List[int]]' = {}
+        universes: 'Dict[int, List[Optional[int]]]' = {}
 
         if fadertype != "Intensity":
             print("!WARNING!: fadertype not yet supported")
@@ -81,5 +82,10 @@ class Scene():
 
         for cuelist in self._cuelists.values():
             combine_universes(universes, cuelist.getDmxState())
-        
+
+        for universe in universes.values():
+            for i, val in enumerate(universe):
+                if val is None:
+                    universe[i] = 0
+
         return universes
