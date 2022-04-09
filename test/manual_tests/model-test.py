@@ -1,10 +1,11 @@
-from OpenLightControlGui.fixture_model import *
+from OpenLightControlGui.fixture_model import Fixture, Manufacturer, AbstractChannel, Capability, CoarseChannel, Entity, FineChannel, Manufacturer, Matrix, Meta, Mode, NullChannel, Physical, Range, Resource, SwitchingChannel, TemplateChannel, Wheel, WheelSlot, DmxScaler
 
+from typing import List, Dict
 import json
 import os
 
 basepath = os.path.dirname(__file__)
-ofl = os.path.join(basepath, "../../open-fixture-library/fixtures/")
+ofl = os.path.join(basepath, "../../../open-fixture-library/fixtures/")
 
 
 def check_prop(obj, checkagain=True):
@@ -23,9 +24,9 @@ def check_prop(obj, checkagain=True):
         #     print("##### failed", obj, key)
 
 
-mans: 'dict[str, Manufacturer]' = {key: Manufacturer(key, val) for key, val in json.load(open(ofl+"manufacturers.json")).items() if not "$" in key}
-fixturesByManu = {}
-fixtures: 'list[Fixture]' = []
+mans: 'Dict[str, Manufacturer]' = {key: Manufacturer(key, val) for key, val in json.load(open(ofl+"manufacturers.json")).items() if not "$" in key}
+fixturesByManu: 'Dict[str, List[Fixture]]' = {}
+fixtures: 'List[Fixture]' = []
 for key, man in mans.items():
     lis = os.listdir(ofl+key)
     fixturesByManu[key] = []
